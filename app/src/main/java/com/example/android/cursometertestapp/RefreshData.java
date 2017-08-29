@@ -7,13 +7,12 @@ import android.util.Log;
 import android.view.View;
 
 /**
- * Gets data from the database and refresh it in  application
+ * Listener для обновления данных при swipe.
  */
 
 public class RefreshData implements SwipeRefreshLayout.OnRefreshListener {
 
     private SwipeRefreshLayout view;
-//    private CoordinatorLayout mCoordinatorLayout;
 
     private MainActivity mMainActivityInstance;
 
@@ -21,7 +20,6 @@ public class RefreshData implements SwipeRefreshLayout.OnRefreshListener {
         mMainActivityInstance = mainActivityInstance;
 
         view = v;
-//        mCoordinatorLayout = coordinatorLayout;
     }
 
     @Override
