@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center"
+    card_view:cardBackgroundColor="@color/cardview_dark_background"
+    card_view:cardCornerRadius="4dp"
+    android:layout_marginLeft="7dp"
+    android:layout_marginRight="7dp"
+    android:layout_marginBottom="6dp"
+    android:layout_marginTop="6dp">
+
+    <LinearLayout
+        android:id="@+id/card_view_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:id = "@+id/last_update_date_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="12sp"
+            android:fontFamily="sans-serif"
+            android:textStyle="normal"
+            android:textColor="#999999"
+            android:paddingLeft="10dp"
+            android:paddingTop="13dp"
+            android:paddingBottom="4dp"
+            tools:text="30 June 14:02"
+            />
+
+        <TextView
+            android:id = "@+id/bank_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="24sp"
+            android:fontFamily="sans-serif-medium"
+            android:textStyle="normal"
+            android:textColor="#ffffff"
+            android:paddingLeft="11dp"
+            tools:text="Alfa-Bank"
+            />
+    </LinearLayout>
+</android.support.v7.widget.CardView>
