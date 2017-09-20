@@ -1,11 +1,13 @@
 package com.example.android.cursometertestapp;
 
+import android.support.design.widget.AppBarLayout;
 import android.support.v4.app.FragmentManager;
 import android.graphics.Color;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import java.util.ArrayList;
@@ -38,6 +40,9 @@ public class MainActivity extends AppCompatActivity {
             FloatingActionButton mFAB = (FloatingActionButton) findViewById(R.id.fab);
             mFAB.show();
 
+            // Аналогично показывается AppBar
+            AppBarLayout appBarLayout = (AppBarLayout) findViewById(R.id.appbar);
+            appBarLayout.setExpanded(true, true);
 
             ViewPager viewPager = (ViewPager) findViewById(R.id.currencies_viewpager);
             String title =
@@ -160,7 +165,7 @@ public class MainActivity extends AppCompatActivity {
         ExchangeRate exampleUsdOilExRate1 = new ExchangeRate(1, 50.0f, 52.0f);
 
         BankRates exampleRubUsdBankRates1 = new BankRates("Сбербанк", new ArrayList<ExchangeRate>(
-                Arrays.asList(exampleRubUsdExRate1, exampleRubUsdExRate2)));
+                Arrays.asList(exampleRubUsdExRate1, exampleRubUsdExRate2, exampleRubUsdExRate3, exampleRubUsdExRate3, exampleRubUsdExRate3, exampleRubUsdExRate3, exampleRubUsdExRate3, exampleRubUsdExRate3)));
 
         BankRates exampleRubUsdBankRates2 = new BankRates("Альфа-Банк", new ArrayList<ExchangeRate>(
                 Arrays.asList(exampleRubUsdExRate3)));
