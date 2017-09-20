@@ -1,5 +1,6 @@
 package com.example.android.cursometertestapp;
 
+import android.os.AsyncTask;
 import android.support.design.widget.AppBarLayout;
 import android.support.v4.app.FragmentManager;
 import android.graphics.Color;
@@ -10,6 +11,8 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+
+import java.net.HttpURLConnection;
 import java.util.ArrayList;
 import java.util.Arrays;
 import android.support.design.widget.Snackbar;
@@ -20,11 +23,34 @@ import android.view.View;
 public class MainActivity extends AppCompatActivity {
 
     public static final String TAG_RETAINED_FRAGMENT = "RetainedFragment";
+    private static final String LOG_TAG = "MainActivity";
+    private static String cookiesString = null;
 
     private ArrayList<CurrenciesRates> mApplicationCurrentData;
 
+    private class AuthorizationAsyncTask extends AsyncTask<String, Long, String> {
+        @Override
+        protected String doInBackground(String... params) {
+            //TODO Unique user ID, check response respondCode and body
+            HttpURLConnection urlConnection = CursometerUtils.createConnection(
+                    CursometerUtils.createUrl(params[0]), "POST", null);
+            CursometerUtils.writeToConnection(urlConnection, "{\"userID\":\"exampleid174942\"}");
+            String resultBody = CursometerUtils.readFromConnection(urlConnection);
+            cookiesString = CursometerUtils.getCookiesString(urlConnection);
+            urlConnection.disconnect();
+            return resultBody;
+        }
+
+        @Override
+        protected void onPostExecute(String responseBody) {
+            Log.v(LOG_TAG, "Authorization response: " + responseBody);
+            Log.v(LOG_TAG, "Cookies: " + cookiesString);
+        }
+    }
+
+
     // pageChangeListener и viewPager - глобальные переменные для доступа к ним из внутреннего
-    // класс (см. объект Runnable mRunnable в методе onCreate).
+    // класса (см. объект Runnable mRunnable в методе onCreate).
 
     private ViewPager viewPager;
     private ViewPager.OnPageChangeListener pageChangeListener = new ViewPager.OnPageChangeListener() {
@@ -62,6 +88,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        new AuthorizationAsyncTask().execute("http://currency.btc-solutions.ru:8080/api/Account");
 
         // Данные хранятся во фрагменте с тэгом TAG_RETAINED_FRAGMENT который не уничтожается при
         // перезапуске Activity. Если Activity перезапускается (например, при повороте экрана) -
