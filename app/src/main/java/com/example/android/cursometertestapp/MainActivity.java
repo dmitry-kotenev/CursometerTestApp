@@ -43,8 +43,8 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(String responseBody) {
-            Log.v(LOG_TAG, "Authorization response: " + responseBody);
-            Log.v(LOG_TAG, "Cookies: " + cookiesString);
+            Log.v(LOG_TAG, "Authorization response: " + responseBody); // for testing
+            Log.v(LOG_TAG, "Cookies: " + cookiesString); // for testing
         }
     }
 
