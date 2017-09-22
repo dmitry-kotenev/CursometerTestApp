@@ -79,7 +79,7 @@ public final class CursometerUtils {
             if (cookies != null) {
                 urlConnection.setRequestProperty("Cookie", cookies);
             }
-            //urlConnection.connect();
+            urlConnection.connect();
         } catch (IOException exception) {
             Log.e(LOG_TAG, "Connection error.", exception);
         }
@@ -108,25 +108,17 @@ public final class CursometerUtils {
         }
     }
 
-    private static String readFromStream(InputStream inputStream) {
+    private static String readFromStream(InputStream inputStream) throws IOException{
         StringBuilder output = new StringBuilder();
         if (inputStream != null) {
             InputStreamReader inputStreamReader = new InputStreamReader(inputStream, Charset.forName("UTF-8"));
             BufferedReader reader = new BufferedReader(inputStreamReader);
 
             String line = null;
-            try {
                 line = reader.readLine();
-            } catch (IOException e) {
-                Log.e(LOG_TAG , "line = reader.readLine() 1;", e);
-            }
             while (line != null) {
                 output.append(line);
-                try {
                     line = reader.readLine();
-                } catch (IOException e) {
-                    Log.e(LOG_TAG , "line = reader.readLine() 2;", e);;
-                }
             }
         }
         return output.toString();

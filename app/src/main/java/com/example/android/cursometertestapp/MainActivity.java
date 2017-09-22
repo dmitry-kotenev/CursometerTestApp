@@ -45,10 +45,6 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
             //TODO Unique user ID, check response respondCode and body
             HttpURLConnection urlConnection = CursometerUtils.createConnection(
                     CursometerUtils.createUrl(params[0]), "POST", null);
-
-            urlConnection.setDoOutput(true);
-            urlConnection.setDoInput(true);
-
             CursometerUtils.writeToConnection(urlConnection, "{\"userID\":\"exampleid174942\"}");
             String resultBody = CursometerUtils.readFromConnection(urlConnection);
             cookiesString = CursometerUtils.getCookiesString(urlConnection);
