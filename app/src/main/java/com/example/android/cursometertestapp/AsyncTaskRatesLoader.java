@@ -34,12 +34,7 @@ public class AsyncTaskRatesLoader extends AsyncTaskLoader<String> {
     @Override
     public String loadInBackground() {
         Log.e(LOG_TAG, "doInBackground is running."); // for testing
-        HttpURLConnection urlConnection = CursometerUtils.createConnection(
-                CursometerUtils.createUrl(urlString), "GET", cookiesString);
-        //CursometerUtils.writeToConnection(urlConnection, "{\"userID\":\"exampleid174942\"}");
-        String resultBody = CursometerUtils.readFromConnection(urlConnection);
-        //cookiesString = CursometerUtils.getCookiesString(urlConnection);
-        urlConnection.disconnect();
-        return resultBody;
+
+        return (CursometerUtils.makeGetRequest(urlString, cookiesString)).toString();
     }
 }

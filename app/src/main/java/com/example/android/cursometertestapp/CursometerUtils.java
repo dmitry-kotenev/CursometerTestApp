@@ -4,6 +4,9 @@ import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.Log;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -13,6 +16,7 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
+import java.net.ProtocolException;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.List;
@@ -81,7 +85,10 @@ public final class CursometerUtils {
             }
             urlConnection.connect();
         } catch (IOException exception) {
-            Log.e(LOG_TAG, "Connection error.", exception);
+            Log.e(LOG_TAG, "Error in creating connection.", exception);
+            if (urlConnection != null) {
+                urlConnection.disconnect();
+            }
         }
         return urlConnection;
     }
@@ -130,5 +137,90 @@ public final class CursometerUtils {
         writer.write(bodyString);
         writer.flush();
         writer.close();
+    }
+
+    public static JSONObject convertResponseToJSON(String strJSON) {
+        boolean success = false;
+        String errorMessage = "";
+        JSONObject resultJSON = null;
+        try {
+            resultJSON = new JSONObject(strJSON);
+            success = resultJSON.getBoolean("success");
+            errorMessage = resultJSON.getString("error");
+        } catch (JSONException e) {
+            Log.e(LOG_TAG, "Falling to convert received data to proper JSONObject", e);
+        }
+
+        try {
+            if (!success) {
+                throw new IOException("Authorization is unsuccessful." +
+                        " Error message from server: " + errorMessage);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+
+        return resultJSON;
+    }
+
+    public static boolean isConnectionOK(HttpURLConnection urlConnection) {
+        try {
+            if (urlConnection.getResponseCode() != 200) {
+                throw new IOException("Connection response code: " + urlConnection.getResponseCode()
+                        + "; Connection response message: " + urlConnection.getResponseMessage());
+            }
+        } catch (IOException e) {
+            Log.e(LOG_TAG, "Wrong connection response. ", e);
+            return false;
+        }
+        return true;
+    }
+
+    public static String makeAuthorizationPostRequest(String urlString, String userID) {
+        HttpURLConnection urlConnection = createConnection(createUrl(urlString), "POST", null);
+        writeToConnection(urlConnection, "{\"userID\":\"" + userID + "\"}");
+        String resultBody = readFromConnection(urlConnection);
+        String tempCookiesString = getCookiesString(urlConnection);
+
+        if (!isConnectionOK(urlConnection)) {
+            urlConnection.disconnect();
+            return null;
+        }
+        urlConnection.disconnect();
+
+        // Call this method to check if response is okay:
+        convertResponseToJSON(resultBody);
+
+        return tempCookiesString;
+    }
+
+    public static JSONObject makeGetRequest(String urlString, String cookiesString) {
+        HttpURLConnection urlConnection = createConnection(createUrl(urlString), "GET",
+                cookiesString);
+        String resultBody = readFromConnection(urlConnection);
+
+        if (!isConnectionOK(urlConnection)) {
+            urlConnection.disconnect();
+            return null;
+        }
+        urlConnection.disconnect();
+
+        return convertResponseToJSON(resultBody);
+    }
+
+    public static JSONObject makePostRequest(String urlString, String cookiesString, String bodyString) {
+        HttpURLConnection urlConnection = createConnection(createUrl(urlString), "POST",
+                cookiesString);
+        writeToConnection(urlConnection, bodyString);
+        String resultBody = readFromConnection(urlConnection);
+
+        if (!isConnectionOK(urlConnection)) {
+            urlConnection.disconnect();
+            return null;
+        }
+        urlConnection.disconnect();
+
+        return convertResponseToJSON(resultBody);
     }
 }

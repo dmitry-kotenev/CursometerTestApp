@@ -11,21 +11,14 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.AsyncTaskLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.view.ViewPager;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-
-import java.net.HttpURLConnection;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Objects;
-
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
-
-import org.json.JSONObject;
 
 public class MainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<String> {
 
@@ -42,28 +35,18 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         protected String doInBackground(String... params) {
             Log.e(LOG_TAG, "AuthorizationAsyncTask doInBackground is executed"); // for testing
 
-            //TODO Unique user ID, check response respondCode and body
-            HttpURLConnection urlConnection = CursometerUtils.createConnection(
-                    CursometerUtils.createUrl(params[0]), "POST", null);
-            CursometerUtils.writeToConnection(urlConnection, "{\"userID\":\"exampleid174942\"}");
-            String resultBody = CursometerUtils.readFromConnection(urlConnection);
-            cookiesString = CursometerUtils.getCookiesString(urlConnection);
-            urlConnection.disconnect();
-            return resultBody;
+            return CursometerUtils.makeAuthorizationPostRequest(params[0], params[1]);
         }
 
         @Override
-        protected void onPostExecute(String responseBody) {
-            Log.v(LOG_TAG, "Authorization response: " + responseBody); // for testing
-            Log.v(LOG_TAG, "Cookies: " + cookiesString); // for testing
-
+        protected void onPostExecute(String tempCookiesString) {
+//            Log.v(LOG_TAG, "Authorization response: " + responseBody); // for testing
+//            Log.v(LOG_TAG, "Cookies: " + cookiesString); // for testing
+            cookiesString = tempCookiesString;
             Bundle bundle = new Bundle();
             bundle.putString("url", "http://currency.btc-solutions.ru:8080/api/CurrencySubscription?Lang=0");
             bundle.putString("cookies", cookiesString);
             getSupportLoaderManager().initLoader(ASYNC_TASK_LOADER_ID, bundle, MainActivity.this);
-
-
-
         }
     }
 
@@ -110,7 +93,8 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
         Log.e(LOG_TAG, "onCreate is running. Cookie string: " + cookiesString); // for testing
         if (cookiesString == null) {
-            new AuthorizationAsyncTask().execute("http://currency.btc-solutions.ru:8080/api/Account");
+            new AuthorizationAsyncTask().
+                    execute("http://currency.btc-solutions.ru:8080/api/Account", "exampleid174942");
         }
 
         // Данные хранятся во фрагменте с тэгом TAG_RETAINED_FRAGMENT который не уничтожается при
