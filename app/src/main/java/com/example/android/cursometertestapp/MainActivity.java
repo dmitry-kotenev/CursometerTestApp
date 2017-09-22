@@ -7,6 +7,9 @@ import android.graphics.Color;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.AsyncTaskLoader;
+import android.support.v4.content.Loader;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -15,15 +18,21 @@ import android.os.Bundle;
 import java.net.HttpURLConnection;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Objects;
+
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 
-public class MainActivity extends AppCompatActivity {
+import org.json.JSONObject;
+
+public class MainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<String> {
 
     public static final String TAG_RETAINED_FRAGMENT = "RetainedFragment";
     private static final String LOG_TAG = "MainActivity";
+    private static final int ASYNC_TASK_LOADER_ID = 1;
+
     private static String cookiesString = null;
 
     private ArrayList<CurrenciesRates> mApplicationCurrentData;
@@ -31,9 +40,15 @@ public class MainActivity extends AppCompatActivity {
     private class AuthorizationAsyncTask extends AsyncTask<String, Long, String> {
         @Override
         protected String doInBackground(String... params) {
+            Log.e(LOG_TAG, "AuthorizationAsyncTask doInBackground is executed"); // for testing
+
             //TODO Unique user ID, check response respondCode and body
             HttpURLConnection urlConnection = CursometerUtils.createConnection(
                     CursometerUtils.createUrl(params[0]), "POST", null);
+
+            urlConnection.setDoOutput(true);
+            urlConnection.setDoInput(true);
+
             CursometerUtils.writeToConnection(urlConnection, "{\"userID\":\"exampleid174942\"}");
             String resultBody = CursometerUtils.readFromConnection(urlConnection);
             cookiesString = CursometerUtils.getCookiesString(urlConnection);
@@ -45,6 +60,14 @@ public class MainActivity extends AppCompatActivity {
         protected void onPostExecute(String responseBody) {
             Log.v(LOG_TAG, "Authorization response: " + responseBody); // for testing
             Log.v(LOG_TAG, "Cookies: " + cookiesString); // for testing
+
+            Bundle bundle = new Bundle();
+            bundle.putString("url", "http://currency.btc-solutions.ru:8080/api/CurrencySubscription?Lang=0");
+            bundle.putString("cookies", cookiesString);
+            getSupportLoaderManager().initLoader(ASYNC_TASK_LOADER_ID, bundle, MainActivity.this);
+
+
+
         }
     }
 
@@ -89,7 +112,10 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        new AuthorizationAsyncTask().execute("http://currency.btc-solutions.ru:8080/api/Account");
+        Log.e(LOG_TAG, "onCreate is running. Cookie string: " + cookiesString); // for testing
+        if (cookiesString == null) {
+            new AuthorizationAsyncTask().execute("http://currency.btc-solutions.ru:8080/api/Account");
+        }
 
         // Данные хранятся во фрагменте с тэгом TAG_RETAINED_FRAGMENT который не уничтожается при
         // перезапуске Activity. Если Activity перезапускается (например, при повороте экрана) -
@@ -218,5 +244,32 @@ public class MainActivity extends AppCompatActivity {
                 new ArrayList<BankRates>(Arrays.asList(exampleUsdOilBankRates1)));
 
         return new ArrayList<CurrenciesRates>(Arrays.asList(exampleRubUsdRates, exampleRubEurRates, exampleRubUsdRates, exampleUsdOilRates));
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        Log.e(LOG_TAG, "onStart is running. Cookie string: " + cookiesString); // for testing
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Log.e(LOG_TAG, "onResume is running. Cookie string: " + cookiesString); // for testing
+    }
+
+    @Override
+    public AsyncTaskLoader<String> onCreateLoader(int id, Bundle args) {
+        return new AsyncTaskRatesLoader(this, args.getString("url"), args.getString("cookies"));
+        }
+
+    @Override
+    public void onLoadFinished(Loader<String> loader, String ratesString) {
+        Log.e(LOG_TAG, "Data from Loader: " + ratesString); // for testing
+    }
+
+    @Override
+    public void onLoaderReset(Loader<String> loader) {
+        Log.e(LOG_TAG, "onLoader Reset is running."); // for testing
     }
 }

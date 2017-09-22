@@ -65,14 +65,21 @@ public final class CursometerUtils {
             urlConnection.setRequestMethod(requestType);
             urlConnection.setReadTimeout(15000 /* milliseconds */);
             urlConnection.setConnectTimeout(15000 /* milliseconds */);
-            urlConnection.setDoInput(true);
-            urlConnection.setDoOutput(true);
             urlConnection.addRequestProperty("Accept", "application/json");
             urlConnection.addRequestProperty("Content-Type", "application/json");
-            urlConnection.connect();
+
+            urlConnection.setDoInput(true);
+            if (requestType == "POST") {
+                urlConnection.setDoOutput(true);
+            }
+            else {
+                urlConnection.setDoOutput(false);
+            }
+
             if (cookies != null) {
                 urlConnection.setRequestProperty("Cookie", cookies);
             }
+            //urlConnection.connect();
         } catch (IOException exception) {
             Log.e(LOG_TAG, "Connection error.", exception);
         }
@@ -101,15 +108,25 @@ public final class CursometerUtils {
         }
     }
 
-    private static String readFromStream(InputStream inputStream) throws IOException {
+    private static String readFromStream(InputStream inputStream) {
         StringBuilder output = new StringBuilder();
         if (inputStream != null) {
             InputStreamReader inputStreamReader = new InputStreamReader(inputStream, Charset.forName("UTF-8"));
             BufferedReader reader = new BufferedReader(inputStreamReader);
-            String line = reader.readLine();
+
+            String line = null;
+            try {
+                line = reader.readLine();
+            } catch (IOException e) {
+                Log.e(LOG_TAG , "line = reader.readLine() 1;", e);
+            }
             while (line != null) {
                 output.append(line);
-                line = reader.readLine();
+                try {
+                    line = reader.readLine();
+                } catch (IOException e) {
+                    Log.e(LOG_TAG , "line = reader.readLine() 2;", e);;
+                }
             }
         }
         return output.toString();
