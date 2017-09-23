@@ -4,6 +4,7 @@ import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.Log;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -19,6 +20,8 @@ import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -222,5 +225,57 @@ public final class CursometerUtils {
         urlConnection.disconnect();
 
         return convertResponseToJSON(resultBody);
+    }
+
+    public static List<CurrenciesRates> getDataFromJSONResponse(JSONObject receivedData) {
+
+        ArrayList<CurrenciesRates> resAllCurrencies = new ArrayList<CurrenciesRates>();
+        try {
+            JSONArray sourceAllCurrencies = receivedData.getJSONArray("subscriptionCategories");
+
+            for (int i = 0; i < sourceAllCurrencies.length(); i++) {
+                JSONObject sourceOneCurrPair = sourceAllCurrencies.getJSONObject(i);
+                JSONArray sourceAllBanks = sourceOneCurrPair.getJSONArray("sources");
+                ArrayList<BankRates> resAllBanks = new ArrayList<BankRates>();
+
+                for (int j = 0; j < sourceAllBanks.length(); j++) {
+
+                    // Create BankRates
+                    JSONObject sourceOneBank = sourceAllBanks.getJSONObject(j);
+
+                    // create list with quotation
+                    JSONArray sourceBankRatesList = sourceOneBank.getJSONArray("ranges");
+                    ArrayList<ExchangeRate> resBankRatesList = new ArrayList<ExchangeRate>();
+
+                    for (int k = 0; k < sourceBankRatesList.length(); k++) {
+                        JSONObject sourceOneRate = sourceBankRatesList.getJSONObject(k);
+                        ExchangeRate resOneRate = new ExchangeRate(
+                                sourceOneRate.getInt("range"),
+                                (float) sourceOneRate.getDouble("buyPriceNow"),
+                                (float) sourceOneRate.getDouble("salePriceNow"));
+                        resBankRatesList.add(resOneRate);
+                    }
+                    // create list of quotation end.
+
+                    BankRates resOneBank = new BankRates(
+                            sourceOneBank.getString("name"),
+                            resBankRatesList);
+                    // Create BankRates end
+
+                    resAllBanks.add(resOneBank);
+                }
+                CurrenciesRates resOneCurrenciesRates = new CurrenciesRates(
+                        sourceOneCurrPair.getString("fullName"),
+                        sourceOneCurrPair.getString("name"),
+                        resAllBanks);
+                resAllCurrencies.add(resOneCurrenciesRates);
+            }
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        return resAllCurrencies;
+
     }
 }
