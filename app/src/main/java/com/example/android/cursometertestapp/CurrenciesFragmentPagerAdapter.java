@@ -3,6 +3,7 @@ package com.example.android.cursometertestapp;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
+import android.support.v4.view.PagerAdapter;
 import android.util.Log;
 import java.util.ArrayList;
 
@@ -37,5 +38,11 @@ public class CurrenciesFragmentPagerAdapter extends FragmentStatePagerAdapter {
     public int getCount() {
         ArrayList<CurrenciesRates> currData = mainActivityInstance.getApplicationCurrentData();
         return currData.size();
+    }
+
+    // https://stackoverflow.com/questions/28116710/pageradapter-notifydatasetchanged-does-not-refresh-fragments
+    @Override
+    public int getItemPosition(Object object){
+        return PagerAdapter.POSITION_NONE;
     }
 }

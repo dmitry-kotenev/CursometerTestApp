@@ -29,8 +29,8 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     private static final int ASYNC_TASK_LOADER_ID = 1;
 
     private static String cookiesString = null;
-
-    private ArrayList<CurrenciesRates> mApplicationCurrentData;
+    // https://stackoverflow.com/questions/27856709/loading-data-from-asynctask-to-fragments-using-fragmentpageradapter
+    public static ArrayList<CurrenciesRates> mApplicationCurrentData = null;
 
     private class AuthorizationAsyncTask extends AsyncTask<String, Long, String> {
         @Override
@@ -93,12 +93,6 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Log.e(LOG_TAG, "onCreate is running. Cookie string: " + cookiesString); // for testing
-        if (cookiesString == null) {
-            new AuthorizationAsyncTask().
-                    execute("http://currency.btc-solutions.ru:8080/api/Account", "exampleid174942");
-        }
-
         // Данные хранятся во фрагменте с тэгом TAG_RETAINED_FRAGMENT который не уничтожается при
         // перезапуске Activity. Если Activity перезапускается (например, при повороте экрана) -
         // используем существующий фрагмент, если приложение запускается заново - создаём фрагмент.
@@ -108,19 +102,25 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         // нём теряются, что ведёт к "аварийной" остановке приложения. В будущем, механизм храненрия
         // данных будет изменён.
 
-        FragmentManager fm = getSupportFragmentManager();
-        RetainedFragment mRetainedFragment = (RetainedFragment) fm.findFragmentByTag(TAG_RETAINED_FRAGMENT);
+//        FragmentManager fm = getSupportFragmentManager();
+//        RetainedFragment mRetainedFragment = (RetainedFragment) fm.findFragmentByTag(TAG_RETAINED_FRAGMENT);
+//
+//        if (mRetainedFragment == null) {
+//            mRetainedFragment = new RetainedFragment();
+//            fm.beginTransaction().add(mRetainedFragment, TAG_RETAINED_FRAGMENT).commit();
+//
+//            // Как временное решение, для целей тестирования UI, используем вымышленные, подставные
+//            // двнные. См. метод getExampleArrayOfCurrenciesRates().
+//            mRetainedFragment.setData(getExampleArrayOfCurrenciesRates());
+//        }
+//
+//        mApplicationCurrentData = mRetainedFragment.getData();
 
-        if (mRetainedFragment == null) {
-            mRetainedFragment = new RetainedFragment();
-            fm.beginTransaction().add(mRetainedFragment, TAG_RETAINED_FRAGMENT).commit();
+        mApplicationCurrentData = new ArrayList<CurrenciesRates>();
 
-            // Как временное решение, для целей тестирования UI, используем вымышленные, подставные
-            // двнные. См. метод getExampleArrayOfCurrenciesRates().
-            mRetainedFragment.setData(getExampleArrayOfCurrenciesRates());
-        }
-
-        mApplicationCurrentData = mRetainedFragment.getData();
+//        if (mApplicationCurrentData == null) {
+//            mApplicationCurrentData = getExampleArrayOfCurrenciesRates();
+//        }
 
         // Устанавливаем Toolbar в качестве ActionBar.
         // https://developer.android.com/training/appbar/setting-up.html
@@ -147,7 +147,9 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
             }
         };
 
-        viewPager.post(mRunnable);
+        if (!mApplicationCurrentData.isEmpty()) {
+            viewPager.post(mRunnable);
+        }
 
         //https://stackoverflow.com/questions/38459309/how-do-you-create-an-android-view-pager-with-a-dots-indicator
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
@@ -156,7 +158,20 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         CurrenciesFragmentPagerAdapter adapter =
                 new CurrenciesFragmentPagerAdapter(getSupportFragmentManager(), this);
         viewPager.setAdapter(adapter);
-        pageChangeListener.onPageSelected(0);
+        if (!mApplicationCurrentData.isEmpty()) {
+            pageChangeListener.onPageSelected(0);
+        }
+
+        Log.e(LOG_TAG, "onCreate is running. Cookie string: " + cookiesString); // for testing
+        if (cookiesString == null) {
+            new AuthorizationAsyncTask().
+                    execute("http://currency.btc-solutions.ru:8080/api/Account", "exampleid174942");
+        } else {
+            Bundle bundle = new Bundle();
+            bundle.putString("url", "http://currency.btc-solutions.ru:8080/api/CurrencySubscription?Lang=0");
+            bundle.putString("cookies", cookiesString);
+            getSupportLoaderManager().initLoader(ASYNC_TASK_LOADER_ID, bundle, MainActivity.this);
+        }
     }
 
     public ArrayList<CurrenciesRates> getApplicationCurrentData(){
@@ -247,11 +262,16 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
     @Override
     public void onLoadFinished(Loader<List<CurrenciesRates>> loader, List<CurrenciesRates> resultList) {
+        Log.e(LOG_TAG, "onLoadFinished is running. Cookie string: " + cookiesString); // for testing
+
         String logString = "";
         for (int i = 0; i < resultList.size(); i++){
             logString += (resultList.get(i).getCurrenciesShortName() + ", ");
         }
         Log.e(LOG_TAG, "Data from Loader: " + logString); // for testing
+
+        mApplicationCurrentData = (ArrayList<CurrenciesRates>) resultList;
+        viewPager.getAdapter().notifyDataSetChanged();
     }
 
     @Override

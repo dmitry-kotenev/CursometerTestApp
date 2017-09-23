@@ -35,6 +35,7 @@ public class CurrenciesFragment extends android.support.v4.app.Fragment {
             position = savedInstanceState.getInt("Position");
         }
         mMainActivityInstance = (MainActivity) getActivity();
+        Log.e("CurrenciesFragment", "Fragment is created, position: " + position);
     }
 
     @Override

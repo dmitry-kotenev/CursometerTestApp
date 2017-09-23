@@ -27,6 +27,7 @@ public class AsyncTaskRatesLoader extends AsyncTaskLoader<List<CurrenciesRates>>
 
     @Override
     protected void onStartLoading() {
+        Log.e(LOG_TAG, "onStartLoading is running."); // for testing
         forceLoad();
     }
 
