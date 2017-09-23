@@ -3,17 +3,16 @@ package com.example.android.cursometertestapp;
 import android.support.v4.content.AsyncTaskLoader;
 import android.content.Context;
 import android.util.Log;
-import android.util.StringBuilderPrinter;
 
 import org.json.JSONObject;
 
-import java.net.HttpURLConnection;
+import java.util.List;
 
 /**
  * Loader for rates.
  */
 
-public class AsyncTaskRatesLoader extends AsyncTaskLoader<String> {
+public class AsyncTaskRatesLoader extends AsyncTaskLoader<List<CurrenciesRates>> {
 
     private static final String LOG_TAG = "AsyncTaskLoader";
 
@@ -32,9 +31,10 @@ public class AsyncTaskRatesLoader extends AsyncTaskLoader<String> {
     }
 
     @Override
-    public String loadInBackground() {
+    public List<CurrenciesRates> loadInBackground() {
         Log.e(LOG_TAG, "doInBackground is running."); // for testing
 
-        return (CursometerUtils.makeGetRequest(urlString, cookiesString)).toString();
+        JSONObject jsonResponse = CursometerUtils.makeGetRequest(urlString, cookiesString);
+        return CursometerUtils.getDataFromJSONResponse(jsonResponse);
     }
 }

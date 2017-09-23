@@ -15,12 +15,14 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
+
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 
-public class MainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<String> {
+public class MainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<List<CurrenciesRates>> {
 
     public static final String TAG_RETAINED_FRAGMENT = "RetainedFragment";
     private static final String LOG_TAG = "MainActivity";
@@ -239,17 +241,21 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     }
 
     @Override
-    public AsyncTaskLoader<String> onCreateLoader(int id, Bundle args) {
+    public AsyncTaskLoader<List<CurrenciesRates>> onCreateLoader(int id, Bundle args) {
         return new AsyncTaskRatesLoader(this, args.getString("url"), args.getString("cookies"));
         }
 
     @Override
-    public void onLoadFinished(Loader<String> loader, String ratesString) {
-        Log.e(LOG_TAG, "Data from Loader: " + ratesString); // for testing
+    public void onLoadFinished(Loader<List<CurrenciesRates>> loader, List<CurrenciesRates> resultList) {
+        String logString = "";
+        for (int i = 0; i < resultList.size(); i++){
+            logString += (resultList.get(i).getCurrenciesShortName() + ", ");
+        }
+        Log.e(LOG_TAG, "Data from Loader: " + logString); // for testing
     }
 
     @Override
-    public void onLoaderReset(Loader<String> loader) {
+    public void onLoaderReset(Loader<List<CurrenciesRates>> loader) {
         Log.e(LOG_TAG, "onLoader Reset is running."); // for testing
     }
 }
