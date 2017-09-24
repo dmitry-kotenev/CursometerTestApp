@@ -36,6 +36,34 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     // https://stackoverflow.com/questions/27856709/loading-data-from-asynctask-to-fragments-using-fragmentpageradapter
     public static ArrayList<CurrenciesRates> mApplicationCurrentData = null;
 
+    private List<DataUpdateListener> mListeners;
+
+    // Update data in fragments through listeners:
+    // https://stackoverflow.com/questions/37759734/dynamically-updating-a-fragment
+    // https://medium.com/inloop/adventures-with-fragmentstatepageradapter-4f56a643f8e0
+    public interface DataUpdateListener {
+        void onDataUpdate();
+    }
+
+    public synchronized void registerDataUpdateListener(DataUpdateListener listener) {
+        mListeners.add(listener);
+    }
+
+    public synchronized void unregisterDataUpdateListener(DataUpdateListener listener) {
+        mListeners.remove(listener);
+    }
+
+    public synchronized void dataUpdated() {
+        for (DataUpdateListener listener : mListeners) {
+            listener.onDataUpdate();
+        }
+    }
+
+    public MainActivity() {
+        Log.e(LOG_TAG, "MAIN_ACTIVITI CONSTRUCTOR");
+        mListeners = new ArrayList<>();
+    }
+
     private class AuthorizationAsyncTask extends AsyncTask<String, Long, String> {
         @Override
         protected String doInBackground(String... params) {
@@ -148,7 +176,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
 
         viewPager = (ViewPager) findViewById(R.id.currencies_viewpager);
-        viewPager.setSaveFromParentEnabled(false); // !!! It prevents from getting blank fragments, but fragments are created many times.
+        //viewPager.setSaveFromParentEnabled(false); // !!! It prevents from getting blank fragments, but fragments are created many times.
         pagerAdapter =
                 new CurrenciesFragmentPagerAdapter(getSupportFragmentManager(), this);
         viewPager.setAdapter(pagerAdapter);
@@ -316,6 +344,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 //        }
 
         mApplicationCurrentData = (ArrayList<CurrenciesRates>) resultList;
+//        mApplicationCurrentData = new ArrayList<CurrenciesRates>(); // uncomment for test "no quotations is selected" screen
 
 //        pagerAdapter =
 //                new CurrenciesFragmentPagerAdapter(getSupportFragmentManager(), this);
@@ -323,6 +352,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 ////            //mApplicationCurrentData = new ArrayList<CurrenciesRates>(); // for testing
 ////            //viewPager.removeAllViews();
         pagerAdapter.notifyDataSetChanged();
+        dataUpdated();
 
         if (mApplicationCurrentData.isEmpty()) {
             noQuotationsSelectedView.setVisibility(View.VISIBLE);

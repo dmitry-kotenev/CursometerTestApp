@@ -49,8 +49,8 @@ public class CurrenciesFragmentPagerAdapter extends FragmentStatePagerAdapter {
     }
 
     // https://stackoverflow.com/questions/28116710/pageradapter-notifydatasetchanged-does-not-refresh-fragments
-    @Override
-    public int getItemPosition(Object object){
-        return PagerAdapter.POSITION_NONE;
-    }
+//    @Override
+//    public int getItemPosition(Object object){
+//        return PagerAdapter.POSITION_NONE;
+//    }
 }

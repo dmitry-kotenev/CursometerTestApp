@@ -1,5 +1,6 @@
 package com.example.android.cursometertestapp;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentManager;
@@ -19,7 +20,7 @@ import java.util.ArrayList;
  * Класс для фрагментов, для отображения всех обменных курсов для одной пары валют по всем банкам.
  */
 
-public class CurrenciesFragment extends android.support.v4.app.Fragment {
+public class CurrenciesFragment extends android.support.v4.app.Fragment implements MainActivity.DataUpdateListener {
 
     private int position;
     private MainActivity mMainActivityInstance;
@@ -45,15 +46,7 @@ public class CurrenciesFragment extends android.support.v4.app.Fragment {
 
         Log.e("CurrenciesFragment", "Setting data to fragment, position: " + position);
 
-        mMainActivityInstance = (MainActivity) getActivity();
-        CardsAdapter mCardsAdapter;
-        if (mMainActivityInstance.getApplicationCurrentData() != null) {
-            mCardsAdapter = new CardsAdapter(mMainActivityInstance.getApplicationCurrentData().get(position).getBankRates());
-        }   else {
-            mCardsAdapter = new CardsAdapter(new ArrayList<BankRates>());
-        }
-
-        listOfCards.setAdapter(mCardsAdapter);
+        onDataUpdate();
     }
 
     @Override
@@ -76,5 +69,29 @@ public class CurrenciesFragment extends android.support.v4.app.Fragment {
         listOfCards.setNestedScrollingEnabled(false);  //строка необходима для плавной перемотки списка.
         resultView.setOnRefreshListener(new RefreshData(mMainActivityInstance, resultView));
         return resultView;
+    }
+
+    @Override
+    public void onDataUpdate() {
+        mMainActivityInstance = (MainActivity) getActivity();
+        CardsAdapter mCardsAdapter;
+        if (mMainActivityInstance.getApplicationCurrentData() != null) {
+            mCardsAdapter = new CardsAdapter(mMainActivityInstance.getApplicationCurrentData().get(position).getBankRates());
+        }   else {
+            mCardsAdapter = new CardsAdapter(new ArrayList<BankRates>());
+        }
+        listOfCards.setAdapter(mCardsAdapter);
+    }
+
+    @Override
+    public void onAttach(Context activity) {
+        super.onAttach(activity);
+        ((MainActivity) activity).registerDataUpdateListener(this);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        ((MainActivity) getActivity()).unregisterDataUpdateListener(this);
     }
 }
