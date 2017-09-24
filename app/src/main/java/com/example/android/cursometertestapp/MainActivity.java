@@ -21,6 +21,10 @@ import android.support.design.widget.Snackbar;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<List<CurrenciesRates>> {
 
@@ -57,6 +61,9 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     // класса (см. объект Runnable mRunnable в методе onCreate).
 
     private ViewPager viewPager;
+    private CurrenciesFragmentPagerAdapter pagerAdapter;
+    private RelativeLayout noQuotationsSelectedView;
+    private ImageView splashScreenView;
     private ViewPager.OnPageChangeListener pageChangeListener = new ViewPager.OnPageChangeListener() {
         @Override
         public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
@@ -116,7 +123,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 //
 //        mApplicationCurrentData = mRetainedFragment.getData();
 
-        mApplicationCurrentData = new ArrayList<CurrenciesRates>();
+        //mApplicationCurrentData = new ArrayList<CurrenciesRates>();
 
 //        if (mApplicationCurrentData == null) {
 //            mApplicationCurrentData = getExampleArrayOfCurrenciesRates();
@@ -128,10 +135,37 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         customAppBar.setTitleTextColor(Color.parseColor("#FFFFFF"));
         setSupportActionBar(customAppBar);
 
+        noQuotationsSelectedView = (RelativeLayout) findViewById(R.id.no_quot_selected_view);
+        splashScreenView = (ImageView) findViewById(R.id.splash_screen);
+        if (mApplicationCurrentData == null) {
+            splashScreenView.setVisibility(View.VISIBLE);
+        }
+//        int AppBarHeight = customAppBar.getHeight();
+//        CoordinatorLayout.LayoutParams lp = (CoordinatorLayout.LayoutParams) noQuotationsSelectedView.getLayoutParams();
+//        lp.setMargins(0, AppBarHeight, 0, 0);
+
+//        noQuotationsSelectedView.setPadding(0, customAppBar.getHeight(), 0, 0);
+
 
         viewPager = (ViewPager) findViewById(R.id.currencies_viewpager);
+        viewPager.setSaveFromParentEnabled(false); // !!! It prevents from getting blank fragments, but fragments are created many times.
+        pagerAdapter =
+                new CurrenciesFragmentPagerAdapter(getSupportFragmentManager(), this);
+        viewPager.setAdapter(pagerAdapter);
 
-        viewPager.addOnPageChangeListener(pageChangeListener);
+//        viewPager.setVisibility(View.INVISIBLE);
+
+//        viewPager.addOnPageChangeListener(pageChangeListener);
+
+
+
+
+
+
+//        if ((mApplicationCurrentData != null) && (!mApplicationCurrentData.isEmpty())) {
+//            Log.e(LOG_TAG, "Selected 0 page"); //For testing
+//            pageChangeListener.onPageSelected(0);
+//        }
 
         // Вызов метода onPageSelected для первой страницы после запуска приложения, для
         // отображения корректного заголовка в ActionBar.
@@ -139,30 +173,23 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         //
         // Переменные  pageChangeListener и viewPager объявлены глобальными для доступа к ним из
         // метода run() ниже.
-        Runnable mRunnable = new Runnable(){
-            @Override
-            public void run()
-            {
-                pageChangeListener.onPageSelected(viewPager.getCurrentItem());
-            }
-        };
+//        Runnable mRunnable = new Runnable(){
+//            @Override
+//            public void run()
+//            {
+//                pageChangeListener.onPageSelected(viewPager.getCurrentItem());
+//            }
+//        };
 
-        if (!mApplicationCurrentData.isEmpty()) {
-            viewPager.post(mRunnable);
-        }
+//        if ((mApplicationCurrentData != null) && (!mApplicationCurrentData.isEmpty())) {
+//            viewPager.post(mRunnable);
+//        }
 
         //https://stackoverflow.com/questions/38459309/how-do-you-create-an-android-view-pager-with-a-dots-indicator
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(viewPager, true);
 
-        CurrenciesFragmentPagerAdapter adapter =
-                new CurrenciesFragmentPagerAdapter(getSupportFragmentManager(), this);
-        viewPager.setAdapter(adapter);
-        if (!mApplicationCurrentData.isEmpty()) {
-            pageChangeListener.onPageSelected(0);
-        }
-
-        Log.e(LOG_TAG, "onCreate is running. Cookie string: " + cookiesString); // for testing
+        Log.e(LOG_TAG, "ONCREATE is running. Cookie string: " + cookiesString); // for testing
         if (cookiesString == null) {
             new AuthorizationAsyncTask().
                     execute("http://currency.btc-solutions.ru:8080/api/Account", "exampleid174942");
@@ -245,8 +272,11 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
     @Override
     protected void onStart() {
-        super.onStart();
         Log.e(LOG_TAG, "onStart is running. Cookie string: " + cookiesString); // for testing
+//        if (mApplicationCurrentData == null) {
+//            viewPager.getAdapter().notifyDataSetChanged();
+//        }
+        super.onStart();
     }
 
     @Override
@@ -270,12 +300,63 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         }
         Log.e(LOG_TAG, "Data from Loader: " + logString); // for testing
 
+        splashScreenView.setVisibility(View.GONE);
+
+//        if (mApplicationCurrentData == null) {
+//            mApplicationCurrentData = (ArrayList<CurrenciesRates>) resultList;
+//            pagerAdapter =
+//                    new CurrenciesFragmentPagerAdapter(getSupportFragmentManager(), this);
+//            viewPager.setAdapter(pagerAdapter);
+//            pagerAdapter.notifyDataSetChanged();
+//        } else {
+//            mApplicationCurrentData = (ArrayList<CurrenciesRates>) resultList;
+//            //mApplicationCurrentData = new ArrayList<CurrenciesRates>(); // for testing
+//            //viewPager.removeAllViews();
+//            pagerAdapter.notifyDataSetChanged();
+//        }
+
         mApplicationCurrentData = (ArrayList<CurrenciesRates>) resultList;
-        viewPager.getAdapter().notifyDataSetChanged();
+
+//        pagerAdapter =
+//                new CurrenciesFragmentPagerAdapter(getSupportFragmentManager(), this);
+//        viewPager.setAdapter(pagerAdapter);
+////            //mApplicationCurrentData = new ArrayList<CurrenciesRates>(); // for testing
+////            //viewPager.removeAllViews();
+        pagerAdapter.notifyDataSetChanged();
+
+        if (mApplicationCurrentData.isEmpty()) {
+            noQuotationsSelectedView.setVisibility(View.VISIBLE);
+        } else {
+            noQuotationsSelectedView.setVisibility(View.GONE);
+        }
     }
 
     @Override
     public void onLoaderReset(Loader<List<CurrenciesRates>> loader) {
         Log.e(LOG_TAG, "onLoader Reset is running."); // for testing
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+
+//        if (viewPager != null) {
+//            // before screen rotation it's better to detach pagerAdapter from the ViewPager, so
+//            // pagerAdapter can remove all old fragments, so they're not reused after rotation.
+//            viewPager.setAdapter(null);
+//        }
+
+        super.onSaveInstanceState(outState);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        Log.e(LOG_TAG, "ONSTOP");
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        Log.e(LOG_TAG, "ONDESTROY");
     }
 }

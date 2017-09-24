@@ -5,6 +5,8 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.PagerAdapter;
 import android.util.Log;
+import android.view.ViewGroup;
+
 import java.util.ArrayList;
 
 /**
@@ -15,10 +17,13 @@ public class CurrenciesFragmentPagerAdapter extends FragmentStatePagerAdapter {
 
     private MainActivity mainActivityInstance;
 
+
     public CurrenciesFragmentPagerAdapter(FragmentManager fm, MainActivity mainActivity) {
         super(fm);
         mainActivityInstance = mainActivity;
     }
+
+
 
     @Override
     public Fragment getItem(int position) {
@@ -37,6 +42,9 @@ public class CurrenciesFragmentPagerAdapter extends FragmentStatePagerAdapter {
     @Override
     public int getCount() {
         ArrayList<CurrenciesRates> currData = mainActivityInstance.getApplicationCurrentData();
+        if (currData == null) {
+            return 0;
+        }
         return currData.size();
     }
 

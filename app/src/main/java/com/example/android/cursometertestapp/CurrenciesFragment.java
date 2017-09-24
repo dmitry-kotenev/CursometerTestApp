@@ -24,6 +24,8 @@ public class CurrenciesFragment extends android.support.v4.app.Fragment {
     private int position;
     private MainActivity mMainActivityInstance;
 
+    private RecyclerView listOfCards;
+
     public CurrenciesFragment() {
         // Required empty public constructor
     }
@@ -34,8 +36,24 @@ public class CurrenciesFragment extends android.support.v4.app.Fragment {
         if (savedInstanceState != null) {
             position = savedInstanceState.getInt("Position");
         }
-        mMainActivityInstance = (MainActivity) getActivity();
         Log.e("CurrenciesFragment", "Fragment is created, position: " + position);
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
+        Log.e("CurrenciesFragment", "Setting data to fragment, position: " + position);
+
+        mMainActivityInstance = (MainActivity) getActivity();
+        CardsAdapter mCardsAdapter;
+        if (mMainActivityInstance.getApplicationCurrentData() != null) {
+            mCardsAdapter = new CardsAdapter(mMainActivityInstance.getApplicationCurrentData().get(position).getBankRates());
+        }   else {
+            mCardsAdapter = new CardsAdapter(new ArrayList<BankRates>());
+        }
+
+        listOfCards.setAdapter(mCardsAdapter);
     }
 
     @Override
@@ -53,15 +71,10 @@ public class CurrenciesFragment extends android.support.v4.app.Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
         SwipeRefreshLayout resultView = (SwipeRefreshLayout) inflater.inflate(R.layout.currencies_rates_list, container, false);
-        RecyclerView listOfCards = (RecyclerView) resultView.findViewById(R.id.list_of_ex_rates);
+        listOfCards = (RecyclerView) resultView.findViewById(R.id.list_of_ex_rates);
         listOfCards.setLayoutManager(new LinearLayoutManager(CurrenciesFragment.this.getContext()));
-        CardsAdapter mCardsAdapter = new CardsAdapter(mMainActivityInstance.getApplicationCurrentData().get(position).getBankRates());
-        listOfCards.setAdapter(mCardsAdapter);
-
         listOfCards.setNestedScrollingEnabled(false);  //строка необходима для плавной перемотки списка.
-
         resultView.setOnRefreshListener(new RefreshData(mMainActivityInstance, resultView));
-
         return resultView;
     }
 }
