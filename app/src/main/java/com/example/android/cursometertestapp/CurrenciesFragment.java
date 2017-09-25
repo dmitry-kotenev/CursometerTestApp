@@ -27,6 +27,15 @@ public class CurrenciesFragment extends android.support.v4.app.Fragment implemen
 
     private RecyclerView listOfCards;
 
+    private class RefreshData implements SwipeRefreshLayout.OnRefreshListener {
+
+        @Override
+        public void onRefresh() {
+            ((MainActivity) getActivity()).refreshDataFromServer();
+        }
+    }
+
+
     public CurrenciesFragment() {
         // Required empty public constructor
     }
@@ -67,7 +76,7 @@ public class CurrenciesFragment extends android.support.v4.app.Fragment implemen
         listOfCards = (RecyclerView) resultView.findViewById(R.id.list_of_ex_rates);
         listOfCards.setLayoutManager(new LinearLayoutManager(CurrenciesFragment.this.getContext()));
         listOfCards.setNestedScrollingEnabled(false);  //строка необходима для плавной перемотки списка.
-        resultView.setOnRefreshListener(new RefreshData(mMainActivityInstance, resultView));
+        resultView.setOnRefreshListener(new RefreshData());
         return resultView;
     }
 
@@ -81,6 +90,7 @@ public class CurrenciesFragment extends android.support.v4.app.Fragment implemen
             mCardsAdapter = new CardsAdapter(new ArrayList<BankRates>());
         }
         listOfCards.setAdapter(mCardsAdapter);
+        ((SwipeRefreshLayout) getView()).setRefreshing(false);
     }
 
     @Override

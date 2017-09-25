@@ -263,25 +263,28 @@ public class MainActivity extends AppCompatActivity
     public void refreshDataFromServer() {
 
         //TODO try to get data from Internet and update it.
+        Bundle bundle = new Bundle();
+        bundle.putString("url", "http://currency.btc-solutions.ru:8080/api/CurrencySubscription?Lang=0");
+        bundle.putString("cookies", cookiesString);
+        getSupportLoaderManager().restartLoader(ASYNC_TASK_LOADER_ID, bundle, MainActivity.this);
 
-        // На данный момент, обновления данных не происходит. Показывается Snackbar с сообщением о
-        // недоступности интернет-соединения.
 
-        Snackbar noInternetConnectionMessage = Snackbar.make((CoordinatorLayout) this.findViewById(R.id.main_coordinator_layout),
-                "No Internet connection", Snackbar.LENGTH_LONG);
-        noInternetConnectionMessage.setAction("RETRY", new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
 
-                //TODO try to get data from Internet and update it.
-
-                // https://stackoverflow.com/questions/24587925/swiperefreshlayout-trigger-programmatically
-
-                return;
-            }
-        });
-
-        noInternetConnectionMessage.show();
+//        Snackbar noInternetConnectionMessage = Snackbar.make((CoordinatorLayout) this.findViewById(R.id.main_coordinator_layout),
+//                "No Internet connection", Snackbar.LENGTH_LONG);
+//        noInternetConnectionMessage.setAction("RETRY", new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//
+//                //TODO try to get data from Internet and update it.
+//
+//                // https://stackoverflow.com/questions/24587925/swiperefreshlayout-trigger-programmatically
+//
+//                return;
+//            }
+//        });
+//
+//        noInternetConnectionMessage.show();
     }
 
     /**
