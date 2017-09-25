@@ -11,6 +11,7 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.AsyncTaskLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import java.util.ArrayList;
@@ -26,17 +27,57 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-public class MainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<List<CurrenciesRates>> {
+public class MainActivity extends AppCompatActivity
+        implements LoaderManager.LoaderCallbacks<List<CurrenciesRates>>,
+        ViewPager.OnPageChangeListener {
 
     public static final String TAG_RETAINED_FRAGMENT = "RetainedFragment";
+    private static final int DATA_IS_EMPTY_POS = -1;
+    private static final int DATA_IS_NULL_POS = -2;
     private static final String LOG_TAG = "MainActivity";
     private static final int ASYNC_TASK_LOADER_ID = 1;
 
     private static String cookiesString = null;
     // https://stackoverflow.com/questions/27856709/loading-data-from-asynctask-to-fragments-using-fragmentpageradapter
     public static ArrayList<CurrenciesRates> mApplicationCurrentData = null;
+    private static int currentViewPagerPosition = DATA_IS_NULL_POS;
 
     private List<DataUpdateListener> mListeners;
+    private ViewPager viewPager;
+    private CurrenciesFragmentPagerAdapter pagerAdapter;
+    private RelativeLayout noQuotationsSelectedView;
+    private ImageView splashScreenView;
+    private Toolbar appToolbar;
+    private FloatingActionButton mFAB;
+
+
+    @Override
+    public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+    }
+
+    @Override
+    public void onPageSelected(int position) {
+        // FAB может быть спрятана на предыдущей странице, поэтому она показывается явно при
+        // перелистывании на новую страницу.
+        mFAB.show();
+
+        // Аналогично показывается AppBar
+//        AppBarLayout appBarLayout = (AppBarLayout) findViewById(R.id.appbar);
+//        appBarLayout.setExpanded(true, true);
+
+//        ViewPager viewPager = (ViewPager) findViewById(R.id.currencies_viewpager);
+        ActionBar actionBar =  getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setTitle(mApplicationCurrentData.get(position).getCurrenciesShortName());
+        }
+        currentViewPagerPosition = position;
+    }
+
+    @Override
+    public void onPageScrollStateChanged(int state) {
+
+    }
 
     // Update data in fragments through listeners:
     // https://stackoverflow.com/questions/37759734/dynamically-updating-a-fragment
@@ -85,43 +126,26 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     }
 
 
-    // pageChangeListener и viewPager - глобальные переменные для доступа к ним из внутреннего
-    // класса (см. объект Runnable mRunnable в методе onCreate).
 
-    private ViewPager viewPager;
-    private CurrenciesFragmentPagerAdapter pagerAdapter;
-    private RelativeLayout noQuotationsSelectedView;
-    private ImageView splashScreenView;
-    private ViewPager.OnPageChangeListener pageChangeListener = new ViewPager.OnPageChangeListener() {
-        @Override
-        public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-            return;
-        }
 
-        @Override
-        public void onPageSelected(int position) {
-            // FAB может быть спрятана на предыдущей странице, поэтому она показывается явно при
-            // перелистывании на новую страницу.
-            FloatingActionButton mFAB = (FloatingActionButton) findViewById(R.id.fab);
-            mFAB.show();
 
-            // Аналогично показывается AppBar
-            AppBarLayout appBarLayout = (AppBarLayout) findViewById(R.id.appbar);
-            appBarLayout.setExpanded(true, true);
-
-            ViewPager viewPager = (ViewPager) findViewById(R.id.currencies_viewpager);
-            String title =
-                    ((CurrenciesFragmentPagerAdapter) viewPager.getAdapter()).
-                            getFragmentShortTitle(position);
-            Toolbar appToolBar = (Toolbar) findViewById(R.id.toolbar);
-            appToolBar.setTitle(title);
-        }
-
-        @Override
-        public void onPageScrollStateChanged(int state) {
-            return;
-        }
-    };
+//    private ViewPager.OnPageChangeListener pageChangeListener = new ViewPager.OnPageChangeListener() {
+//
+//        @Override
+//        public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+//            return;
+//        }
+//
+//        @Override
+//        public void onPageSelected(int position) {
+//
+//        }
+//
+//        @Override
+//        public void onPageScrollStateChanged(int state) {
+//            return;
+//        }
+//    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -157,11 +181,13 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 //            mApplicationCurrentData = getExampleArrayOfCurrenciesRates();
 //        }
 
+
         // Устанавливаем Toolbar в качестве ActionBar.
         // https://developer.android.com/training/appbar/setting-up.html
-        Toolbar customAppBar = (Toolbar) findViewById(R.id.toolbar);
-        customAppBar.setTitleTextColor(Color.parseColor("#FFFFFF"));
-        setSupportActionBar(customAppBar);
+        appToolbar = (Toolbar) findViewById(R.id.toolbar);
+        appToolbar.setTitleTextColor(Color.parseColor("#FFFFFF"));
+        setSupportActionBar(appToolbar);
+        mFAB = (FloatingActionButton) findViewById(R.id.fab);
 
         noQuotationsSelectedView = (RelativeLayout) findViewById(R.id.no_quot_selected_view);
         splashScreenView = (ImageView) findViewById(R.id.splash_screen);
@@ -180,10 +206,11 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         pagerAdapter =
                 new CurrenciesFragmentPagerAdapter(getSupportFragmentManager(), this);
         viewPager.setAdapter(pagerAdapter);
+        viewPager.addOnPageChangeListener(this);
 
 //        viewPager.setVisibility(View.INVISIBLE);
 
-//        viewPager.addOnPageChangeListener(pageChangeListener);
+
 
 
 
@@ -354,10 +381,31 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         pagerAdapter.notifyDataSetChanged();
         dataUpdated();
 
+        //int position;
+
         if (mApplicationCurrentData.isEmpty()) {
             noQuotationsSelectedView.setVisibility(View.VISIBLE);
+            currentViewPagerPosition = DATA_IS_EMPTY_POS;
+            //appToolbar.setTitle("No quotations is selected.");
+            //currentViewPagerPosition = -1;
         } else {
             noQuotationsSelectedView.setVisibility(View.GONE);
+            //int position =  pagerAdapter.getItemPosition(viewPager.getCurrentItem());
+            if ((currentViewPagerPosition == DATA_IS_EMPTY_POS) || (currentViewPagerPosition == DATA_IS_NULL_POS)) {
+                currentViewPagerPosition = 0;
+            }
+        }
+
+        String title;
+        switch(currentViewPagerPosition) {
+            case DATA_IS_EMPTY_POS: title = "No quotations are selected.";
+                break;
+            default: title = mApplicationCurrentData.get(currentViewPagerPosition).getCurrenciesShortName();
+        }
+
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null){
+            actionBar.setTitle(title);
         }
     }
 
@@ -378,15 +426,15 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         super.onSaveInstanceState(outState);
     }
 
-    @Override
-    protected void onStop() {
-        super.onStop();
-        Log.e(LOG_TAG, "ONSTOP");
-    }
+//    @Override
+//    protected void onStop() {
+//        super.onStop();
+//        Log.e(LOG_TAG, "ONSTOP");
+//    }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        Log.e(LOG_TAG, "ONDESTROY");
-    }
+//    @Override
+//    protected void onDestroy() {
+//        super.onDestroy();
+//        Log.e(LOG_TAG, "ONDESTROY");
+//    }
 }
