@@ -1,6 +1,8 @@
 package com.example.android.cursometertestapp;
 
+import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,13 +18,15 @@ public class ItemsAdapter extends RecyclerView.Adapter<ItemsAdapter.ViewHolder> 
 
     private List<ExchangeRate> mExRates;
 
-    public static class ViewHolder extends RecyclerView.ViewHolder {
+    public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         private TextView mMinAmountTxtView;
         private TextView mSalePriceTxtView;
         private TextView mBuyPriceTxtView;
         private ImageView mBuyRingImgView;
         private ImageView mSaleRingImgView;
         private View mDividerLine;
+        private int sourceId;
+        private String setNotificationsTitle;
 
         public ViewHolder(View oneItemView){
             super(oneItemView);
@@ -32,7 +36,14 @@ public class ItemsAdapter extends RecyclerView.Adapter<ItemsAdapter.ViewHolder> 
             mBuyRingImgView = (ImageView) oneItemView.findViewById(R.id.purchase_ring_image);
             mSaleRingImgView = (ImageView) oneItemView.findViewById(R.id.sale_ring_image);
             mDividerLine = oneItemView.findViewById(R.id.divider_line);
+            itemView.setOnClickListener(this);
+        }
 
+        @Override
+        public void onClick(View v) {
+            Log.e("ItemsAdapter", "Item is clicked. Purchase Price " + sourceId);
+            Intent intent = new Intent(v.getContext(), SetNotificationsActivity.class);
+            v.getContext().startActivity(intent);
         }
     }
 
@@ -44,12 +55,13 @@ public class ItemsAdapter extends RecyclerView.Adapter<ItemsAdapter.ViewHolder> 
     }
 
     @Override
-    public void onBindViewHolder(ItemsAdapter.ViewHolder holder, int position) {
+    public void onBindViewHolder(ItemsAdapter.ViewHolder holder, final int position) {
         holder.mMinAmountTxtView.setText("From: " + (mExRates.get(position).getMinimumAmount()));
         holder.mSalePriceTxtView.setText(String.format("%.2f", mExRates.get(position).
                 getSalePrice()));
         holder.mBuyPriceTxtView.setText(String.format("%.2f", mExRates.get(position).
                 getBuyPrice()));
+        holder.sourceId = (int) mExRates.get(position).getBuyPrice(); //! Temporarily.
 
         if (position == (getItemCount() - 1)){
             holder.mDividerLine.setVisibility(View.GONE);

@@ -13,6 +13,7 @@
         android:textColor="#3cc8f7"
         android:textSize="14sp"
         android:textStyle="normal"
+        android:text="Purchase"
         tools:text="Purchase" />
 
     <RelativeLayout
@@ -30,6 +31,7 @@
             android:textColor="#deffffff"
             android:textSize="16sp"
             android:textStyle="normal"
+            android:text="Above"
             tools:text="Above" />
 
         <Switch
@@ -52,6 +54,7 @@
         android:fontFamily="sans-serif"
         android:textStyle="normal"
         android:textColor="#ffffff"
+        android:text="Current"
         tools:text="Current"
         />
 
@@ -62,6 +65,7 @@
         android:fontFamily="sans-serif"
         android:textStyle="normal"
         android:textColor="#999999"
+        android:text="2491,007"
         tools:text="2491,007"
         />
 
@@ -83,6 +87,7 @@
             android:textColor="#deffffff"
             android:letterSpacing="0.01"
             android:lineSpacingExtra="0sp"
+            android:text="Below 2472,387"
             tools:text="Below 2472,387"
             />
 
@@ -101,6 +106,7 @@
         android:fontFamily="sans-serif-medium"
         android:textStyle="normal"
         android:textColor="#3cc8f7"
+        android:text="Purchase"
         tools:text="Purchase"
         />
 
@@ -119,6 +125,7 @@
             android:textColor="#deffffff"
             android:textSize="16sp"
             android:textStyle="normal"
+            android:text="Above"
             tools:text="Above" />
 
         <Switch
@@ -147,6 +154,7 @@
             android:textColor="#deffffff"
             android:letterSpacing="0.01"
             android:lineSpacingExtra="0sp"
+            android:text="Below 2472,387"
             tools:text="Below 2472,387"
             />
 

@@ -256,7 +256,7 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    public ArrayList<CurrenciesRates> getApplicationCurrentData(){
+    public synchronized ArrayList<CurrenciesRates> getApplicationCurrentData(){
         return mApplicationCurrentData;
     }
 
@@ -375,6 +375,7 @@ public class MainActivity extends AppCompatActivity
 
         mApplicationCurrentData = (ArrayList<CurrenciesRates>) resultList;
 //        mApplicationCurrentData = new ArrayList<CurrenciesRates>(); // uncomment for test "no quotations is selected" screen
+//        mApplicationCurrentData = getExampleArrayOfCurrenciesRates(); // uncomment for testing on known superficial data
 
 //        pagerAdapter =
 //                new CurrenciesFragmentPagerAdapter(getSupportFragmentManager(), this);
