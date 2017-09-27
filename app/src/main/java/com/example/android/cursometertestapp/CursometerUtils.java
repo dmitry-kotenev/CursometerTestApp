@@ -276,6 +276,111 @@ public final class CursometerUtils {
         }
 
         return resAllCurrencies;
+    }
 
+    public static CursometerData getDataFromJSONResponse2(JSONObject receivedData) {
+        CursometerData resultData = new CursometerData();
+        try {
+            JSONArray sourceSubCurrencyPairs = receivedData.getJSONArray("subscriptionCategories");
+            for (int i = 0; i < sourceSubCurrencyPairs.length(); i++) {
+                JSONObject sourceOneCurrPair = sourceSubCurrencyPairs.getJSONObject(i);
+                CursometerData.CurrencyPair resOneCurrencyPair = new CursometerData.CurrencyPair();
+                resOneCurrencyPair.setId(getInteger(sourceOneCurrPair, "id"));
+                resOneCurrencyPair.setName(sourceOneCurrPair.getString("name"));
+                resOneCurrencyPair.setFullName(sourceOneCurrPair.getString("fullName"));
+
+                JSONArray sourceAllBanks = sourceOneCurrPair.getJSONArray("sources");
+                ArrayList<CursometerData.Bank> resAllBanks = new ArrayList<CursometerData.Bank>();
+                for (int j = 0; j < sourceAllBanks.length(); j++) {
+                    // Create BankRates
+                    JSONObject sourceOneBank = sourceAllBanks.getJSONObject(j);
+                    CursometerData.Bank resOneBank = new CursometerData.Bank();
+                    resOneBank.setName(sourceOneBank.getString("name"));
+                    resOneBank.setId(getInteger(sourceOneBank, "id"));
+                    // create list with quotation
+                    JSONArray sourceBankQuotList = sourceOneBank.getJSONArray("ranges");
+                    ArrayList<CursometerData.Quotation> resBankQuotList = new ArrayList<CursometerData.Quotation>();
+
+                    for (int k = 0; k < sourceBankQuotList.length(); k++) {
+                        JSONObject sourceOneQoutation = sourceBankQuotList.getJSONObject(k);
+                        CursometerData.Quotation resOneQuotation = new CursometerData.Quotation();
+                        resOneQuotation.setId(getInteger(sourceOneQoutation, "id"));
+                        resOneQuotation.setFrom(getInteger(sourceOneQoutation, "range"));
+                        resOneQuotation.setBuyPriceNow(getFloat(sourceOneQoutation, "buyPriceNow"));
+                        resOneQuotation.setSalePriceNow(getFloat(sourceOneQoutation, "salePriceNow"));
+                        resOneQuotation.setDateTime(sourceOneQoutation.getString("inserDateTime"));
+
+                        ArrayList<CursometerData.Trigger> triggers = new ArrayList<>();
+                        for (int index = 0; i<4; i++){
+                            triggers.add(null);
+                        }
+                        CursometerData.Trigger buyMinTrigger = new CursometerData.Trigger(
+                                getInteger(sourceOneQoutation, "buyMinTriggerId"),
+                                getInteger(sourceOneQoutation, "buyMinTriggerFireType"),
+                                CursometerData.BUY_MIN,
+                                getFloat(sourceOneQoutation, "buyMinTriggerPrice")
+                        );
+                        triggers.add(CursometerData.BUY_MIN, buyMinTrigger);
+                        CursometerData.Trigger buyMoreTrigger = new CursometerData.Trigger(
+                                getInteger(sourceOneQoutation, "buyMoreTriggerId"),
+                                getInteger(sourceOneQoutation, "buyMoreTriggerFireType"),
+                                CursometerData.BUY_MAX,
+                                getFloat(sourceOneQoutation, "buyMoreTriggerPrice")
+                        );
+                        CursometerData.Trigger sellMinTrigger = new CursometerData.Trigger(
+                                getInteger(sourceOneQoutation, "sellMinTriggerId"),
+                                getInteger(sourceOneQoutation, "sellMinTriggerFireType"),
+                                CursometerData.SALE_MIN,
+                                getFloat(sourceOneQoutation, "sellMinTriggerPrice")
+                        );
+                        triggers.add(CursometerData.SALE_MIN, buyMinTrigger);
+                        CursometerData.Trigger saleMoreTrigger = new CursometerData.Trigger(
+                                getInteger(sourceOneQoutation, "saleMoreTriggerId"),
+                                getInteger(sourceOneQoutation, "saleMoreTriggerFireType"),
+                                CursometerData.SALE_MAX,
+                                getFloat(sourceOneQoutation, "saleMoreTriggerPrice")
+                        );
+                        triggers.add(CursometerData.SALE_MAX, buyMinTrigger);
+
+                        resOneQuotation.setTriggers(triggers);
+                        resOneQuotation.setPrecision(getInteger(sourceOneQoutation,"precision"));
+                        resOneQuotation.setShowSelPrice(sourceOneQoutation.getBoolean("showSellPrice"));
+                        resOneQuotation.setTriggerFireType(getInteger(sourceOneQoutation, "triggerFireType"));
+
+                        resBankQuotList.add(resOneQuotation);
+                    }
+                    // create list of quotation end.
+                    resOneBank.setQuotations(resBankQuotList);
+                    resAllBanks.add(resOneBank);
+                }
+                resOneCurrencyPair.setBanks(resAllBanks);
+                resultData.add(resOneCurrencyPair);
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return resultData;
+    }
+
+    private static int getInteger (JSONObject jsonobject, String fieldName) {
+        try {
+            if (!jsonobject.isNull(fieldName)) {
+                return jsonobject.getInt(fieldName);
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return -1;
+    }
+
+    private static float getFloat (JSONObject jsonobject, String fieldName) {
+        try {
+            if (!jsonobject.isNull(fieldName)) {
+                return (float) jsonobject.getDouble(fieldName);
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return -1.0f;
     }
 }

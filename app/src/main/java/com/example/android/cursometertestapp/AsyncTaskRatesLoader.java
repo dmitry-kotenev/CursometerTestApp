@@ -36,6 +36,14 @@ public class AsyncTaskRatesLoader extends AsyncTaskLoader<List<CurrenciesRates>>
         Log.e(LOG_TAG, "doInBackground is running."); // for testing
 
         JSONObject jsonResponse = CursometerUtils.makeGetRequest(urlString, cookiesString);
+
+        // ***for testing:
+        CursometerData cursometerData = CursometerUtils.getDataFromJSONResponse2(jsonResponse);
+        float saleMinTriggerID = cursometerData.get(0).getBanks().get(0).getQuotations().get(0).
+                getTriggers().get(CursometerData.SALE_MAX).getValue();
+        Log.v("Loader", "Sale min trigger ID: " + saleMinTriggerID);
+        // ***
+
         return CursometerUtils.getDataFromJSONResponse(jsonResponse);
     }
 }
