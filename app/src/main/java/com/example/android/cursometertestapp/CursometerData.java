@@ -24,7 +24,7 @@ public class CursometerData extends ArrayList<CursometerData.CurrencyPair> {
         private int triggerType = -1;
         private float value = -1;
 
-        public Trigger(Integer triggerId, Integer triggerFireType, Integer triggerType, float value) {
+        public Trigger(int triggerId, int triggerFireType, int triggerType, float value) {
             this.triggerId = triggerId;
             this.triggerFireType = triggerFireType;
             this.triggerType = triggerType;
@@ -36,7 +36,6 @@ public class CursometerData extends ArrayList<CursometerData.CurrencyPair> {
         }
 
         public void setTriggerId(Integer triggerId) {
-            if (triggerId == null){return;}
             this.triggerId = triggerId;
         }
 
@@ -45,7 +44,6 @@ public class CursometerData extends ArrayList<CursometerData.CurrencyPair> {
         }
 
         public void setTriggerFireType(Integer triggerFireType) {
-            if (triggerFireType == null){return;}
             this.triggerFireType = triggerFireType;
         }
 
@@ -54,7 +52,6 @@ public class CursometerData extends ArrayList<CursometerData.CurrencyPair> {
         }
 
         public void setTriggerType(Integer triggerType) {
-            if (triggerType == null){return;}
             this.triggerType = triggerType;
         }
 
@@ -63,7 +60,6 @@ public class CursometerData extends ArrayList<CursometerData.CurrencyPair> {
         }
 
         public void setValue(Float value) {
-            if (value == null){return;}
             this.value = value;
         }
     }
@@ -79,12 +75,22 @@ public class CursometerData extends ArrayList<CursometerData.CurrencyPair> {
         boolean showSelPrice;
         int triggerFireType = -1;
 
+        public Quotation() {
+            this.triggers = new ArrayList<Trigger>();
+            for (int i = 0; i < 4; i++) {
+                triggers.add(null);
+            }
+        }
+
+        public Trigger getTrigger(int triggerType) {
+            return getTriggers().get(triggerType);
+        }
+
         public int getId() {
             return id;
         }
 
-        public void setId(Integer id) {
-            if (id == null){return;}
+        public void setId(int id) {
             this.id = id;
         }
 
@@ -92,8 +98,7 @@ public class CursometerData extends ArrayList<CursometerData.CurrencyPair> {
             return from;
         }
 
-        public void setFrom(Integer from) {
-            if (from == null){return;}
+        public void setFrom(int from) {
             this.from = from;
         }
 
@@ -101,8 +106,7 @@ public class CursometerData extends ArrayList<CursometerData.CurrencyPair> {
             return buyPriceNow;
         }
 
-        public void setBuyPriceNow(Float buyPriceNow) {
-            if (buyPriceNow == null){return;}
+        public void setBuyPriceNow(float buyPriceNow) {
             this.buyPriceNow = buyPriceNow;
         }
 
@@ -110,8 +114,7 @@ public class CursometerData extends ArrayList<CursometerData.CurrencyPair> {
             return salePriceNow;
         }
 
-        public void setSalePriceNow(Float salePriceNow) {
-            if (salePriceNow == null){return;}
+        public void setSalePriceNow(float salePriceNow) {
             this.salePriceNow = salePriceNow;
         }
 
@@ -144,7 +147,6 @@ public class CursometerData extends ArrayList<CursometerData.CurrencyPair> {
         }
 
         public void setTriggerFireType(Integer triggerFireType) {
-            if (triggerFireType == null){return;}
             this.triggerFireType = triggerFireType;
         }
 
@@ -155,19 +157,16 @@ public class CursometerData extends ArrayList<CursometerData.CurrencyPair> {
         public void setTriggers(ArrayList<Trigger> triggers) {
             this.triggers = triggers;
         }
-
-        public Quotation() {
-            this.triggers = new ArrayList<Trigger>();
-            for (int i = 0; i < 4; i++) {
-                triggers.add(null);
-            }
-        }
     }
 
     public static class Bank {
         private String name;
         private int id = -1;
         private ArrayList<Quotation> quotations;
+
+        public Quotation getQuotation(int quotationIndex) {
+            return getQuotations().get(quotationIndex);
+        }
 
         public String getName() {
             return name;
@@ -181,8 +180,7 @@ public class CursometerData extends ArrayList<CursometerData.CurrencyPair> {
             return id;
         }
 
-        public void setId(Integer id) {
-            if (id == null){return;}
+        public void setId(int id) {
             this.id = id;
         }
 
@@ -201,12 +199,15 @@ public class CursometerData extends ArrayList<CursometerData.CurrencyPair> {
         private String fullName;
         ArrayList<Bank> banks;
 
+        public Bank getBank(int bankIndex) {
+            return getBanks().get(bankIndex);
+        }
+
         public int getId() {
             return id;
         }
 
-        public void setId(Integer id) {
-            if (id == null){return;}
+        public void setId(int id) {
             this.id = id;
         }
 
