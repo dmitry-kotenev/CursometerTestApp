@@ -324,26 +324,30 @@ public final class CursometerUtils {
                                 getFloat(sourceOneQoutation, "buyMinTriggerPrice")
                         );
                         triggers.add(CursometerData.BUY_MIN, buyMinTrigger);
+
                         CursometerData.Trigger buyMoreTrigger = new CursometerData.Trigger(
                                 getInteger(sourceOneQoutation, "buyMoreTriggerId"),
                                 getInteger(sourceOneQoutation, "buyMoreTriggerFireType"),
                                 CursometerData.BUY_MAX,
                                 getFloat(sourceOneQoutation, "buyMoreTriggerPrice")
                         );
-                        CursometerData.Trigger sellMinTrigger = new CursometerData.Trigger(
+                        triggers.add(CursometerData.BUY_MAX, buyMoreTrigger);
+
+                        CursometerData.Trigger saleMinTrigger = new CursometerData.Trigger(
                                 getInteger(sourceOneQoutation, "sellMinTriggerId"),
                                 getInteger(sourceOneQoutation, "sellMinTriggerFireType"),
                                 CursometerData.SALE_MIN,
                                 getFloat(sourceOneQoutation, "sellMinTriggerPrice")
                         );
-                        triggers.add(CursometerData.SALE_MIN, buyMinTrigger);
+                        triggers.add(CursometerData.SALE_MIN, saleMinTrigger);
+
                         CursometerData.Trigger saleMoreTrigger = new CursometerData.Trigger(
                                 getInteger(sourceOneQoutation, "saleMoreTriggerId"),
                                 getInteger(sourceOneQoutation, "saleMoreTriggerFireType"),
                                 CursometerData.SALE_MAX,
                                 getFloat(sourceOneQoutation, "saleMoreTriggerPrice")
                         );
-                        triggers.add(CursometerData.SALE_MAX, buyMinTrigger);
+                        triggers.add(CursometerData.SALE_MAX, saleMoreTrigger);
 
                         resOneQuotation.setTriggers(triggers);
                         resOneQuotation.setPrecision(getInteger(sourceOneQoutation,"precision"));
@@ -361,7 +365,6 @@ public final class CursometerUtils {
             }
         } catch (JSONException e) {
             e.printStackTrace();
-            Log.e(LOG_TAG, "Catch block!");
         }
         return resultData;
     }
@@ -373,7 +376,6 @@ public final class CursometerUtils {
             }
         } catch (JSONException e) {
             e.printStackTrace();
-            Log.e(LOG_TAG, "Catch block! 1");
         }
         return -1;
     }
@@ -385,7 +387,6 @@ public final class CursometerUtils {
             }
         } catch (JSONException e) {
             e.printStackTrace();
-            Log.e(LOG_TAG, "Catch block! 2");
         }
         return -1.0f;
     }
