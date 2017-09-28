@@ -39,8 +39,9 @@ public class AsyncTaskRatesLoader extends AsyncTaskLoader<List<CurrenciesRates>>
 
         // ***for testing:
         CursometerData cursometerData = CursometerUtils.getDataFromJSONResponse2(jsonResponse);
-        float saleMinTriggerID = cursometerData.get(0).getBanks().get(0).getQuotations().get(0).
-                getTriggers().get(CursometerData.SALE_MAX).getValue();
+        Log.v("Loader", "Data Size: " + cursometerData.size());
+        int saleMinTriggerID = cursometerData.get(1).getBanks().get(0).getQuotations().get(0).
+                getTriggers().get(CursometerData.SALE_MAX).getTriggerId();
         Log.v("Loader", "Sale min trigger ID: " + saleMinTriggerID);
         // ***
 

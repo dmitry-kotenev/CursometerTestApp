@@ -282,7 +282,10 @@ public final class CursometerUtils {
         CursometerData resultData = new CursometerData();
         try {
             JSONArray sourceSubCurrencyPairs = receivedData.getJSONArray("subscriptionCategories");
+            Log.v(LOG_TAG, "N of CurrPairs: " + sourceSubCurrencyPairs.length());
             for (int i = 0; i < sourceSubCurrencyPairs.length(); i++) {
+                Log.e(LOG_TAG, "Index counter: " + i);
+
                 JSONObject sourceOneCurrPair = sourceSubCurrencyPairs.getJSONObject(i);
                 CursometerData.CurrencyPair resOneCurrencyPair = new CursometerData.CurrencyPair();
                 resOneCurrencyPair.setId(getInteger(sourceOneCurrPair, "id"));
@@ -311,7 +314,7 @@ public final class CursometerUtils {
                         resOneQuotation.setDateTime(sourceOneQoutation.getString("inserDateTime"));
 
                         ArrayList<CursometerData.Trigger> triggers = new ArrayList<>();
-                        for (int index = 0; i<4; i++){
+                        for (int m = 0; m < 4; m++){
                             triggers.add(null);
                         }
                         CursometerData.Trigger buyMinTrigger = new CursometerData.Trigger(
@@ -358,6 +361,7 @@ public final class CursometerUtils {
             }
         } catch (JSONException e) {
             e.printStackTrace();
+            Log.e(LOG_TAG, "Catch block!");
         }
         return resultData;
     }
@@ -369,6 +373,7 @@ public final class CursometerUtils {
             }
         } catch (JSONException e) {
             e.printStackTrace();
+            Log.e(LOG_TAG, "Catch block! 1");
         }
         return -1;
     }
@@ -380,6 +385,7 @@ public final class CursometerUtils {
             }
         } catch (JSONException e) {
             e.printStackTrace();
+            Log.e(LOG_TAG, "Catch block! 2");
         }
         return -1.0f;
     }
