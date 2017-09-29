@@ -9,12 +9,14 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 
+import static android.R.attr.data;
+
 /**
  * Адаптер для списка карточек.
  */
 
 public class CardsAdapter extends RecyclerView.Adapter<CardsAdapter.ViewHolder> {
-    private ArrayList<BankRates> mListOfBankRates;
+    private ArrayList<CursometerData.Bank> mListOfBanks;
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         public TextView mBankNameTextView;
@@ -56,11 +58,11 @@ public class CardsAdapter extends RecyclerView.Adapter<CardsAdapter.ViewHolder> 
      */
     @Override
     public int getItemViewType(int position) {
-        return mListOfBankRates.get(position).getExRates().size();
+        return mListOfBanks.get(position).getQuotations().size();
     }
 
-    public CardsAdapter(List<BankRates> data) {
-        mListOfBankRates = (ArrayList<BankRates>) data;
+    public CardsAdapter(ArrayList<CursometerData.Bank> data) {
+        mListOfBanks = data;
     }
 
     @Override
@@ -72,14 +74,14 @@ public class CardsAdapter extends RecyclerView.Adapter<CardsAdapter.ViewHolder> 
 
     @Override
     public void onBindViewHolder(CardsAdapter.ViewHolder holder, int position) {
-        holder.mBankNameTextView.setText(mListOfBankRates.get(position).getBankName());
-        holder.mDateAndTimeTextView.setText(mListOfBankRates.get(position).getLastUpdateDateAndTime());
+        holder.mBankNameTextView.setText(mListOfBanks.get(position).getName());
+        holder.mDateAndTimeTextView.setText(mListOfBanks.get(position).getQuotation(0).getDateTime()); //set date and time for first quotation temporarily
 
-        holder.mItemsAdapter.setData(mListOfBankRates.get(position).getExRates());
+        holder.mItemsAdapter.setData(mListOfBanks.get(position).getQuotations());
     }
 
     @Override
     public int getItemCount() {
-        return mListOfBankRates.size();
+        return mListOfBanks.size();
     }
 }

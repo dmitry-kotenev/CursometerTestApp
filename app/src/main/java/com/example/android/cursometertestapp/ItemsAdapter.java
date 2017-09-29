@@ -16,7 +16,7 @@ import java.util.List;
 
 public class ItemsAdapter extends RecyclerView.Adapter<ItemsAdapter.ViewHolder> {
 
-    private List<ExchangeRate> mExRates;
+    private List<CursometerData.Quotation> mQuotations;
 
     public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         private TextView mMinAmountTxtView;
@@ -56,12 +56,12 @@ public class ItemsAdapter extends RecyclerView.Adapter<ItemsAdapter.ViewHolder> 
 
     @Override
     public void onBindViewHolder(ItemsAdapter.ViewHolder holder, final int position) {
-        holder.mMinAmountTxtView.setText("From: " + (mExRates.get(position).getMinimumAmount()));
-        holder.mSalePriceTxtView.setText(String.format("%.2f", mExRates.get(position).
-                getSalePrice()));
-        holder.mBuyPriceTxtView.setText(String.format("%.2f", mExRates.get(position).
-                getBuyPrice()));
-        holder.sourceId = (int) mExRates.get(position).getBuyPrice(); //! Temporarily.
+        holder.mMinAmountTxtView.setText("From: " + (mQuotations.get(position).getFrom()));
+        holder.mSalePriceTxtView.setText(String.format("%.2f", mQuotations.get(position).
+                getSalePriceNow()));
+        holder.mBuyPriceTxtView.setText(String.format("%.2f", mQuotations.get(position).
+                getBuyPriceNow()));
+        holder.sourceId = (int) mQuotations.get(position).getId();
 
         if (position == (getItemCount() - 1)){
             holder.mDividerLine.setVisibility(View.GONE);
@@ -75,10 +75,10 @@ public class ItemsAdapter extends RecyclerView.Adapter<ItemsAdapter.ViewHolder> 
 
     @Override
     public int getItemCount() {
-        return mExRates.size();
+        return mQuotations.size();
     }
 
-    public void setData(List<ExchangeRate> mExRates){
-        this.mExRates = mExRates;
+    public void setData(List<CursometerData.Quotation> quotations){
+        this.mQuotations = quotations;
     }
 }

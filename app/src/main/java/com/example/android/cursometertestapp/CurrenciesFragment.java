@@ -85,9 +85,9 @@ public class CurrenciesFragment extends android.support.v4.app.Fragment implemen
         mMainActivityInstance = (MainActivity) getActivity();
         CardsAdapter mCardsAdapter;
         if (mMainActivityInstance.getApplicationCurrentData() != null) {
-            mCardsAdapter = new CardsAdapter(mMainActivityInstance.getApplicationCurrentData().get(position).getBankRates());
+            mCardsAdapter = new CardsAdapter(mMainActivityInstance.getApplicationCurrentData().getCurrencyPair(position).getBanks());
         }   else {
-            mCardsAdapter = new CardsAdapter(new ArrayList<BankRates>());
+            mCardsAdapter = new CardsAdapter(new ArrayList<CursometerData.Bank>());
         }
         listOfCards.setAdapter(mCardsAdapter);
         ((SwipeRefreshLayout) getView()).setRefreshing(false);

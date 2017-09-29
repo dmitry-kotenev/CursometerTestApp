@@ -17,6 +17,10 @@ public class CursometerData extends ArrayList<CursometerData.CurrencyPair> {
     public static final int NOTIFY_PERMANENT = 0;
     public static final int NOTIFY_ONCE = 1;
 
+    public CurrencyPair getCurrencyPair(int index) {
+        return get(index);
+    }
+
     public static class Trigger {
 
         private int triggerId = -1;

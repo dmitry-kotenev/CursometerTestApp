@@ -28,7 +28,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity
-        implements LoaderManager.LoaderCallbacks<List<CurrenciesRates>>,
+        implements LoaderManager.LoaderCallbacks<CursometerData>,
         ViewPager.OnPageChangeListener {
 
     public static final String TAG_RETAINED_FRAGMENT = "RetainedFragment";
@@ -39,7 +39,7 @@ public class MainActivity extends AppCompatActivity
 
     private static String cookiesString = null;
     // https://stackoverflow.com/questions/27856709/loading-data-from-asynctask-to-fragments-using-fragmentpageradapter
-    public static ArrayList<CurrenciesRates> mApplicationCurrentData = null;
+    public static CursometerData mApplicationCurrentData = null;
     private static int currentViewPagerPosition = DATA_IS_NULL_POS;
 
     private List<DataUpdateListener> mListeners;
@@ -69,7 +69,7 @@ public class MainActivity extends AppCompatActivity
 //        ViewPager viewPager = (ViewPager) findViewById(R.id.currencies_viewpager);
         ActionBar actionBar =  getSupportActionBar();
         if (actionBar != null) {
-            actionBar.setTitle(mApplicationCurrentData.get(position).getCurrenciesShortName());
+            actionBar.setTitle(mApplicationCurrentData.getCurrencyPair(position).getName());
         }
         currentViewPagerPosition = position;
     }
@@ -256,11 +256,11 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    public synchronized ArrayList<CurrenciesRates> getApplicationCurrentData(){
+    public synchronized CursometerData getApplicationCurrentData(){
         return mApplicationCurrentData;
     }
 
-    public void refreshDataFromServer() {
+    public synchronized void refreshDataFromServer() {
 
         //TODO try to get data from Internet and update it.
         Bundle bundle = new Bundle();
@@ -344,17 +344,17 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public AsyncTaskLoader<List<CurrenciesRates>> onCreateLoader(int id, Bundle args) {
+    public AsyncTaskLoader<CursometerData> onCreateLoader(int id, Bundle args) {
         return new AsyncTaskRatesLoader(this, args.getString("url"), args.getString("cookies"));
         }
 
     @Override
-    public void onLoadFinished(Loader<List<CurrenciesRates>> loader, List<CurrenciesRates> resultList) {
+    public void onLoadFinished(Loader<CursometerData> loader, CursometerData resultData) {
         Log.e(LOG_TAG, "onLoadFinished is running. Cookie string: " + cookiesString); // for testing
 
         String logString = "";
-        for (int i = 0; i < resultList.size(); i++){
-            logString += (resultList.get(i).getCurrenciesShortName() + ", ");
+        for (int i = 0; i < resultData.size(); i++){
+            logString += (resultData.getCurrencyPair(i).getFullName() + ", ");
         }
         Log.e(LOG_TAG, "Data from Loader: " + logString); // for testing
 
@@ -373,7 +373,7 @@ public class MainActivity extends AppCompatActivity
 //            pagerAdapter.notifyDataSetChanged();
 //        }
 
-        mApplicationCurrentData = (ArrayList<CurrenciesRates>) resultList;
+        mApplicationCurrentData = resultData;
 //        mApplicationCurrentData = new ArrayList<CurrenciesRates>(); // uncomment for test "no quotations is selected" screen
 //        mApplicationCurrentData = getExampleArrayOfCurrenciesRates(); // uncomment for testing on known superficial data
 
@@ -404,7 +404,7 @@ public class MainActivity extends AppCompatActivity
         switch(currentViewPagerPosition) {
             case DATA_IS_EMPTY_POS: title = "No quotations are selected.";
                 break;
-            default: title = mApplicationCurrentData.get(currentViewPagerPosition).getCurrenciesShortName();
+            default: title = mApplicationCurrentData.getCurrencyPair(currentViewPagerPosition).getName();
         }
 
         ActionBar actionBar = getSupportActionBar();
@@ -414,7 +414,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public void onLoaderReset(Loader<List<CurrenciesRates>> loader) {
+    public void onLoaderReset(Loader<CursometerData> loader) {
         Log.e(LOG_TAG, "onLoader Reset is running."); // for testing
     }
 
