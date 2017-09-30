@@ -3,16 +3,12 @@ package com.example.android.cursometertestapp;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.FragmentManager;
-import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
-import android.widget.TextView;
 import android.support.v4.widget.SwipeRefreshLayout;
 import java.util.ArrayList;
 
@@ -87,7 +83,7 @@ public class CurrenciesFragment extends android.support.v4.app.Fragment implemen
         if (mMainActivityInstance.getApplicationCurrentData() != null) {
             mCardsAdapter = new CardsAdapter(mMainActivityInstance.getApplicationCurrentData().getCurrencyPair(position).getBanks());
         }   else {
-            mCardsAdapter = new CardsAdapter(new ArrayList<CursometerData.Bank>());
+            mCardsAdapter = new CardsAdapter(new ArrayList<SubscribedData.Bank>());
         }
         listOfCards.setAdapter(mCardsAdapter);
         ((SwipeRefreshLayout) getView()).setRefreshing(false);

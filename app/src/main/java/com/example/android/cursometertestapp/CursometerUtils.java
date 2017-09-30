@@ -17,11 +17,9 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
-import java.net.ProtocolException;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -278,8 +276,8 @@ public final class CursometerUtils {
         return resAllCurrencies;
     }
 
-    public static CursometerData getDataFromJSONResponse2(JSONObject receivedData) {
-        CursometerData resultData = new CursometerData();
+    public static SubscribedData getDataFromJSONResponse2(JSONObject receivedData) {
+        SubscribedData resultData = new SubscribedData();
         try {
             JSONArray sourceSubCurrencyPairs = receivedData.getJSONArray("subscriptionCategories");
             Log.v(LOG_TAG, "N of CurrPairs: " + sourceSubCurrencyPairs.length());
@@ -287,67 +285,67 @@ public final class CursometerUtils {
                 Log.e(LOG_TAG, "Index counter: " + i);
 
                 JSONObject sourceOneCurrPair = sourceSubCurrencyPairs.getJSONObject(i);
-                CursometerData.CurrencyPair resOneCurrencyPair = new CursometerData.CurrencyPair();
+                SubscribedData.CurrencyPair resOneCurrencyPair = new SubscribedData.CurrencyPair();
                 resOneCurrencyPair.setId(getInteger(sourceOneCurrPair, "id"));
                 resOneCurrencyPair.setName(sourceOneCurrPair.getString("name"));
                 resOneCurrencyPair.setFullName(sourceOneCurrPair.getString("fullName"));
 
                 JSONArray sourceAllBanks = sourceOneCurrPair.getJSONArray("sources");
-                ArrayList<CursometerData.Bank> resAllBanks = new ArrayList<CursometerData.Bank>();
+                ArrayList<SubscribedData.Bank> resAllBanks = new ArrayList<SubscribedData.Bank>();
                 for (int j = 0; j < sourceAllBanks.length(); j++) {
                     // Create BankRates
                     JSONObject sourceOneBank = sourceAllBanks.getJSONObject(j);
-                    CursometerData.Bank resOneBank = new CursometerData.Bank();
+                    SubscribedData.Bank resOneBank = new SubscribedData.Bank();
                     resOneBank.setName(sourceOneBank.getString("name"));
                     resOneBank.setId(getInteger(sourceOneBank, "id"));
                     // create list with quotation
                     JSONArray sourceBankQuotList = sourceOneBank.getJSONArray("ranges");
-                    ArrayList<CursometerData.Quotation> resBankQuotList = new ArrayList<CursometerData.Quotation>();
+                    ArrayList<SubscribedData.Quotation> resBankQuotList = new ArrayList<SubscribedData.Quotation>();
 
                     for (int k = 0; k < sourceBankQuotList.length(); k++) {
                         JSONObject sourceOneQoutation = sourceBankQuotList.getJSONObject(k);
-                        CursometerData.Quotation resOneQuotation = new CursometerData.Quotation();
+                        SubscribedData.Quotation resOneQuotation = new SubscribedData.Quotation();
                         resOneQuotation.setId(getInteger(sourceOneQoutation, "id"));
                         resOneQuotation.setFrom(getInteger(sourceOneQoutation, "range"));
                         resOneQuotation.setBuyPriceNow(getFloat(sourceOneQoutation, "buyPriceNow"));
                         resOneQuotation.setSalePriceNow(getFloat(sourceOneQoutation, "salePriceNow"));
                         resOneQuotation.setDateTime(sourceOneQoutation.getString("inserDateTime"));
 
-                        ArrayList<CursometerData.Trigger> triggers = new ArrayList<>();
+                        ArrayList<SubscribedData.Trigger> triggers = new ArrayList<>();
                         for (int m = 0; m < 4; m++){
                             triggers.add(null);
                         }
-                        CursometerData.Trigger buyMinTrigger = new CursometerData.Trigger(
+                        SubscribedData.Trigger buyMinTrigger = new SubscribedData.Trigger(
                                 getInteger(sourceOneQoutation, "buyMinTriggerId"),
                                 getInteger(sourceOneQoutation, "buyMinTriggerFireType"),
-                                CursometerData.BUY_MIN,
+                                SubscribedData.BUY_MIN,
                                 getFloat(sourceOneQoutation, "buyMinTriggerPrice")
                         );
-                        triggers.add(CursometerData.BUY_MIN, buyMinTrigger);
+                        triggers.add(SubscribedData.BUY_MIN, buyMinTrigger);
 
-                        CursometerData.Trigger buyMoreTrigger = new CursometerData.Trigger(
+                        SubscribedData.Trigger buyMoreTrigger = new SubscribedData.Trigger(
                                 getInteger(sourceOneQoutation, "buyMoreTriggerId"),
                                 getInteger(sourceOneQoutation, "buyMoreTriggerFireType"),
-                                CursometerData.BUY_MAX,
+                                SubscribedData.BUY_MAX,
                                 getFloat(sourceOneQoutation, "buyMoreTriggerPrice")
                         );
-                        triggers.add(CursometerData.BUY_MAX, buyMoreTrigger);
+                        triggers.add(SubscribedData.BUY_MAX, buyMoreTrigger);
 
-                        CursometerData.Trigger saleMinTrigger = new CursometerData.Trigger(
+                        SubscribedData.Trigger saleMinTrigger = new SubscribedData.Trigger(
                                 getInteger(sourceOneQoutation, "sellMinTriggerId"),
                                 getInteger(sourceOneQoutation, "sellMinTriggerFireType"),
-                                CursometerData.SALE_MIN,
+                                SubscribedData.SALE_MIN,
                                 getFloat(sourceOneQoutation, "sellMinTriggerPrice")
                         );
-                        triggers.add(CursometerData.SALE_MIN, saleMinTrigger);
+                        triggers.add(SubscribedData.SALE_MIN, saleMinTrigger);
 
-                        CursometerData.Trigger saleMoreTrigger = new CursometerData.Trigger(
+                        SubscribedData.Trigger saleMoreTrigger = new SubscribedData.Trigger(
                                 getInteger(sourceOneQoutation, "saleMoreTriggerId"),
                                 getInteger(sourceOneQoutation, "saleMoreTriggerFireType"),
-                                CursometerData.SALE_MAX,
+                                SubscribedData.SALE_MAX,
                                 getFloat(sourceOneQoutation, "saleMoreTriggerPrice")
                         );
-                        triggers.add(CursometerData.SALE_MAX, saleMoreTrigger);
+                        triggers.add(SubscribedData.SALE_MAX, saleMoreTrigger);
 
                         resOneQuotation.setTriggers(triggers);
                         resOneQuotation.setPrecision(getInteger(sourceOneQoutation,"precision"));

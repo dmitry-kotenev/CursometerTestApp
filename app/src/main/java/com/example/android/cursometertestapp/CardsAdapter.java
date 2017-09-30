@@ -7,16 +7,13 @@ import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import android.widget.TextView;
 import java.util.ArrayList;
-import java.util.List;
-
-import static android.R.attr.data;
 
 /**
  * Адаптер для списка карточек.
  */
 
 public class CardsAdapter extends RecyclerView.Adapter<CardsAdapter.ViewHolder> {
-    private ArrayList<CursometerData.Bank> mListOfBanks;
+    private ArrayList<SubscribedData.Bank> mListOfBanks;
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         public TextView mBankNameTextView;
@@ -61,7 +58,7 @@ public class CardsAdapter extends RecyclerView.Adapter<CardsAdapter.ViewHolder> 
         return mListOfBanks.get(position).getQuotations().size();
     }
 
-    public CardsAdapter(ArrayList<CursometerData.Bank> data) {
+    public CardsAdapter(ArrayList<SubscribedData.Bank> data) {
         mListOfBanks = data;
     }
 

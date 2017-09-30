@@ -1,14 +1,12 @@
 package com.example.android.cursometertestapp;
 
-import android.app.job.JobInfo;
-
 import java.util.ArrayList;
 
 /**
  * Class represents data about quotations
  */
 
-public class CursometerData extends ArrayList<CursometerData.CurrencyPair> {
+public class SubscribedData extends ArrayList<SubscribedData.CurrencyPair> {
 
     public static final int BUY_MIN = 0;
     public static final int BUY_MAX = 1;

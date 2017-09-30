@@ -16,7 +16,7 @@ import java.util.List;
 
 public class ItemsAdapter extends RecyclerView.Adapter<ItemsAdapter.ViewHolder> {
 
-    private List<CursometerData.Quotation> mQuotations;
+    private List<SubscribedData.Quotation> mQuotations;
 
     public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         private TextView mMinAmountTxtView;
@@ -78,7 +78,7 @@ public class ItemsAdapter extends RecyclerView.Adapter<ItemsAdapter.ViewHolder> 
         return mQuotations.size();
     }
 
-    public void setData(List<CursometerData.Quotation> quotations){
+    public void setData(List<SubscribedData.Quotation> quotations){
         this.mQuotations = quotations;
     }
 }

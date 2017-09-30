@@ -3,11 +3,6 @@ package com.example.android.cursometertestapp;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
-import android.support.v4.view.PagerAdapter;
-import android.util.Log;
-import android.view.ViewGroup;
-
-import java.util.ArrayList;
 
 /**
  * Адаптер для ViewPager в котором показыватся курсы валют.
@@ -41,7 +36,7 @@ public class CurrenciesFragmentPagerAdapter extends FragmentStatePagerAdapter {
 
     @Override
     public int getCount() {
-       CursometerData currData = mainActivityInstance.getApplicationCurrentData();
+       SubscribedData currData = mainActivityInstance.getApplicationCurrentData();
         if (currData == null) {
             return 0;
         }

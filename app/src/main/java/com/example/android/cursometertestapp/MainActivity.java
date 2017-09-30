@@ -1,10 +1,7 @@
 package com.example.android.cursometertestapp;
 
 import android.os.AsyncTask;
-import android.support.design.widget.AppBarLayout;
-import android.support.v4.app.FragmentManager;
 import android.graphics.Color;
-import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.LoaderManager;
@@ -18,17 +15,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import android.support.design.widget.Snackbar;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity
-        implements LoaderManager.LoaderCallbacks<CursometerData>,
+        implements LoaderManager.LoaderCallbacks<SubscribedData>,
         ViewPager.OnPageChangeListener {
 
     public static final String TAG_RETAINED_FRAGMENT = "RetainedFragment";
@@ -39,7 +33,7 @@ public class MainActivity extends AppCompatActivity
 
     private static String cookiesString = null;
     // https://stackoverflow.com/questions/27856709/loading-data-from-asynctask-to-fragments-using-fragmentpageradapter
-    public static CursometerData mApplicationCurrentData = null;
+    public static SubscribedData mApplicationCurrentData = null;
     private static int currentViewPagerPosition = DATA_IS_NULL_POS;
 
     private List<DataUpdateListener> mListeners;
@@ -256,7 +250,7 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    public synchronized CursometerData getApplicationCurrentData(){
+    public synchronized SubscribedData getApplicationCurrentData(){
         return mApplicationCurrentData;
     }
 
@@ -344,12 +338,12 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public AsyncTaskLoader<CursometerData> onCreateLoader(int id, Bundle args) {
+    public AsyncTaskLoader<SubscribedData> onCreateLoader(int id, Bundle args) {
         return new AsyncTaskRatesLoader(this, args.getString("url"), args.getString("cookies"));
         }
 
     @Override
-    public void onLoadFinished(Loader<CursometerData> loader, CursometerData resultData) {
+    public void onLoadFinished(Loader<SubscribedData> loader, SubscribedData resultData) {
         Log.e(LOG_TAG, "onLoadFinished is running. Cookie string: " + cookiesString); // for testing
 
         String logString = "";
@@ -414,7 +408,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public void onLoaderReset(Loader<CursometerData> loader) {
+    public void onLoaderReset(Loader<SubscribedData> loader) {
         Log.e(LOG_TAG, "onLoader Reset is running."); // for testing
     }
 

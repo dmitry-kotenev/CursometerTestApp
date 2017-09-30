@@ -6,13 +6,11 @@ import android.util.Log;
 
 import org.json.JSONObject;
 
-import java.util.List;
-
 /**
  * Loader for rates.
  */
 
-public class AsyncTaskRatesLoader extends AsyncTaskLoader<CursometerData> {
+public class AsyncTaskRatesLoader extends AsyncTaskLoader<SubscribedData> {
 
     private static final String LOG_TAG = "AsyncTaskLoader";
 
@@ -32,16 +30,16 @@ public class AsyncTaskRatesLoader extends AsyncTaskLoader<CursometerData> {
     }
 
     @Override
-    public CursometerData loadInBackground() {
+    public SubscribedData loadInBackground() {
         Log.e(LOG_TAG, "doInBackground is running."); // for testing
 
         JSONObject jsonResponse = CursometerUtils.makeGetRequest(urlString, cookiesString);
 
         // ***for testing:
-        CursometerData cursometerData = CursometerUtils.getDataFromJSONResponse2(jsonResponse);
-//        Log.v("Loader", "Data Size: " + cursometerData.size());
-//        int saleMinTriggerID = cursometerData.get(1).getBanks().get(0).getQuotations().get(0).
-//                getTriggers().get(CursometerData.SALE_MAX).getTriggerId();
+        SubscribedData subscribedData = CursometerUtils.getDataFromJSONResponse2(jsonResponse);
+//        Log.v("Loader", "Data Size: " + subscribedData.size());
+//        int saleMinTriggerID = subscribedData.get(1).getBanks().get(0).getQuotations().get(0).
+//                getTriggers().get(SubscribedData.SALE_MAX).getTriggerId();
 //        Log.v("Loader", "Sale min trigger ID: " + saleMinTriggerID);
         // ***
 
