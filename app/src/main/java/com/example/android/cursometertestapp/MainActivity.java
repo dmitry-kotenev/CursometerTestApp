@@ -33,7 +33,7 @@ public class MainActivity extends AppCompatActivity
 
     private static String cookiesString = null;
     // https://stackoverflow.com/questions/27856709/loading-data-from-asynctask-to-fragments-using-fragmentpageradapter
-    public static SubscribedData mApplicationCurrentData = null;
+    public static SubscribedData mApplicationCurrentSubscribedData = null;
     private static int currentViewPagerPosition = DATA_IS_NULL_POS;
 
     // Container to keep track of fragments that need update, when data is changed:
@@ -83,7 +83,7 @@ public class MainActivity extends AppCompatActivity
 
         ActionBar actionBar =  getSupportActionBar();
         if (actionBar != null) {
-            actionBar.setTitle(mApplicationCurrentData.getCurrencyPair(position).getName());
+            actionBar.setTitle(mApplicationCurrentSubscribedData.getCurrencyPair(position).getName());
         }
 
         // Keep track of current position in view pager to set appropriate title in onLoadFinished
@@ -146,7 +146,7 @@ public class MainActivity extends AppCompatActivity
 
         noQuotationsSelectedView = (RelativeLayout) findViewById(R.id.no_quot_selected_view);
         splashScreenView = (ImageView) findViewById(R.id.splash_screen);
-        if (mApplicationCurrentData == null) {
+        if (mApplicationCurrentSubscribedData == null) {
             splashScreenView.setVisibility(View.VISIBLE);
         }
 
@@ -171,8 +171,8 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    public synchronized SubscribedData getApplicationCurrentData(){
-        return mApplicationCurrentData;
+    public synchronized SubscribedData getApplicationCurrentSubscribedData(){
+        return mApplicationCurrentSubscribedData;
     }
 
     public synchronized void refreshDataFromServer() {
@@ -214,11 +214,11 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onLoadFinished(Loader<SubscribedData> loader, SubscribedData resultData) {
         splashScreenView.setVisibility(View.GONE);
-        mApplicationCurrentData = resultData;
+        mApplicationCurrentSubscribedData = resultData;
         pagerAdapter.notifyDataSetChanged();
         dataUpdated();
 
-        if (mApplicationCurrentData.isEmpty()) {
+        if (mApplicationCurrentSubscribedData.isEmpty()) {
             noQuotationsSelectedView.setVisibility(View.VISIBLE);
             currentViewPagerPosition = DATA_IS_EMPTY_POS;
         } else {
@@ -233,7 +233,7 @@ public class MainActivity extends AppCompatActivity
         switch(currentViewPagerPosition) {
             case DATA_IS_EMPTY_POS: title = "No quotations are selected.";
                 break;
-            default: title = mApplicationCurrentData.getCurrencyPair(currentViewPagerPosition).
+            default: title = mApplicationCurrentSubscribedData.getCurrencyPair(currentViewPagerPosition).
                     getName();
         }
 

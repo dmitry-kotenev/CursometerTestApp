@@ -30,13 +30,13 @@ public class CurrenciesFragmentPagerAdapter extends FragmentStatePagerAdapter {
     // Стандартный метод getPageTitle не используется, т. к. его использование приводит к появлению
     // заголовков страниц в TabLayout.
     public String getFragmentShortTitle(int position) {
-        return mainActivityInstance.getApplicationCurrentData().getCurrencyPair(position).
+        return mainActivityInstance.getApplicationCurrentSubscribedData().getCurrencyPair(position).
                 getName();
     }
 
     @Override
     public int getCount() {
-       SubscribedData currData = mainActivityInstance.getApplicationCurrentData();
+       SubscribedData currData = mainActivityInstance.getApplicationCurrentSubscribedData();
         if (currData == null) {
             return 0;
         }
