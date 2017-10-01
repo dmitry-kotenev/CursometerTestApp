@@ -65,7 +65,16 @@ public class CurrenciesFragment extends android.support.v4.app.Fragment implemen
         // Строка необходима для плавной перемотки списка.
         // Following line is necessary for smooth scrolling of the RecyclerView.
         listOfCards.setNestedScrollingEnabled(false);
-        resultView.setOnRefreshListener(new RefreshData());
+        resultView.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                ((MainActivity) getActivity()).refreshDataFromServer();
+                SwipeRefreshLayout view = (SwipeRefreshLayout) getView();
+                if (view != null) {
+                    view.setRefreshing(false);
+                }
+            }
+        });
         return resultView;
     }
 
