@@ -29,7 +29,7 @@ public class MainActivity extends AppCompatActivity
     private static final int ASYNC_TASK_LOADER_ID = 1;
     private static final String CURRENCY_SUBSCRIPTION_REQUEST_API_ENDPOINT =
             "http://currency.btc-solutions.ru:8080/api/CurrencySubscription?Lang=0";
-    private static String AUTHORIZATION_REQUEST_API_ENDPOINT =
+    private static final String AUTHORIZATION_REQUEST_API_ENDPOINT =
             "http://currency.btc-solutions.ru:8080/api/Account";
 
     private static String cookiesString = null;
