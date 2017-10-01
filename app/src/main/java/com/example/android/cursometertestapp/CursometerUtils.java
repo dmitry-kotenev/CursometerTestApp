@@ -3,11 +3,9 @@ package com.example.android.cursometertestapp;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.Log;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -24,21 +22,23 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Вспомогательные функции
+ * Вспомогательные функции.
+ *
+ * Helper methods.
  */
 
-public final class CursometerUtils {
+final class CursometerUtils {
 
-    private static String LOG_TAG = "CutsometerUtils";
-    private static String COOKIES_HEADER = "Set-Cookie";
+    private static final String LOG_TAG = "CutsometerUtils";
+    private static final String COOKIES_HEADER = "Set-Cookie";
 
     /**
-     * Возвращает объект URL.
-     * @param stringUrl - url в виде строки.
-     * @return - объект URL в случае успеха, или null.
+     * Transforms url in form of String to the URL object.
+     * @param stringUrl - url String.
+     * @return - URL object or null in case of exception occurred.
      */
-    public static URL createUrl(String stringUrl) {
-        URL url = null;
+    private static URL createUrl(String stringUrl) {
+        URL url;
         try {
             url = new URL(stringUrl);
         } catch (MalformedURLException exception) {
@@ -49,11 +49,11 @@ public final class CursometerUtils {
     }
 
     /**
-     * Возвращает cookies в виде строки.
-     * @param urlConnection
-     * @return - cookies, или null в случае если в urlConnection нет cookies.
+     * Returns cookies from the connection in form of String.
+     * @param urlConnection - HttpURLConnection object.
+     * @return - cookies or null in case of URL object does not contain cookies.
      */
-    public static String getCookiesString(HttpURLConnection urlConnection) {
+    private static String getCookiesString(HttpURLConnection urlConnection) {
         Map<String, List<String>> headerFields = urlConnection.getHeaderFields();
         List<String> cookiesList = headerFields.get(COOKIES_HEADER);
         if (cookiesList == null){
@@ -62,7 +62,15 @@ public final class CursometerUtils {
         return TextUtils.join(";", cookiesList);
     }
 
-    public static HttpURLConnection createConnection(URL url, String requestType, @Nullable String cookies) {
+    /**
+     * Create HttpURLConnection.
+     * @param url - URL object.
+     * @param requestType - "POST" or "GET"
+     * @param cookies - cookies in form of String.
+     * @return - HttpURLConnection.
+     */
+    private static HttpURLConnection createConnection(URL url, String requestType,
+                                                      @Nullable String cookies) {
 
         HttpURLConnection urlConnection = null;
         try {
@@ -74,13 +82,12 @@ public final class CursometerUtils {
             urlConnection.addRequestProperty("Content-Type", "application/json");
 
             urlConnection.setDoInput(true);
-            if (requestType == "POST") {
+            if (requestType.equals("POST")) {
                 urlConnection.setDoOutput(true);
             }
             else {
                 urlConnection.setDoOutput(false);
             }
-
             if (cookies != null) {
                 urlConnection.setRequestProperty("Cookie", cookies);
             }
@@ -94,11 +101,15 @@ public final class CursometerUtils {
         return urlConnection;
     }
 
-    public static String readFromConnection(HttpURLConnection urlConnection){
+    /**
+     * Read from connection and return result in a form of String.
+     * @param urlConnection - HttpURLConnection object.
+     * @return String or null in case of exception is occurred.
+     */
+    private static String readFromConnection(HttpURLConnection urlConnection){
         String result = null;
-        InputStream inputStream = null;
         try {
-            inputStream = urlConnection.getInputStream();
+            InputStream inputStream = urlConnection.getInputStream();
             result =  readFromStream(inputStream);
         } catch (IOException exception) {
             Log.e(LOG_TAG, "Error while reading data from connection", exception);
@@ -106,24 +117,34 @@ public final class CursometerUtils {
         return result;
     }
 
-    public static void writeToConnection(HttpURLConnection urlConnection, String message){
-        OutputStream outputStream = null;
+    /**
+     * Write message to the HttpURLConnection.
+     * @param urlConnection - HttpURLConnection object.
+     * @param message - String.
+     */
+    private static void writeToConnection(HttpURLConnection urlConnection, String message){
         try {
-            outputStream = urlConnection.getOutputStream();
+            OutputStream outputStream = urlConnection.getOutputStream();
             writeToStream(outputStream, message);
         } catch (IOException exception) {
             Log.e(LOG_TAG, "Error while writing data to connection", exception);
         }
     }
 
+    /**
+     * Read message from connection stream. Is used in readFromConnection method.
+     * @param inputStream - InputStream of HttpURLConnection object.
+     * @return received information as a String.
+     * @throws IOException - It is supposed, that exception will be caught in readFromConnection
+     * method.
+     */
     private static String readFromStream(InputStream inputStream) throws IOException{
         StringBuilder output = new StringBuilder();
         if (inputStream != null) {
-            InputStreamReader inputStreamReader = new InputStreamReader(inputStream, Charset.forName("UTF-8"));
+            InputStreamReader inputStreamReader =
+                    new InputStreamReader(inputStream, Charset.forName("UTF-8"));
             BufferedReader reader = new BufferedReader(inputStreamReader);
-
-            String line = null;
-                line = reader.readLine();
+            String line = reader.readLine();
             while (line != null) {
                 output.append(line);
                     line = reader.readLine();
@@ -132,15 +153,28 @@ public final class CursometerUtils {
         return output.toString();
     }
 
-    private static void writeToStream(OutputStream outputStream, String bodyString) throws IOException{
-        OutputStreamWriter outputStreamWriter = new OutputStreamWriter(outputStream, Charset.forName("UTF-8"));
+    /**
+     *
+     * @param outputStream - OutputStream of HttpURLConnection object.
+     * @param bodyString - Information as a String that will be sent.
+     * @throws IOException - It is supposed, that exception will be caught in writeToConnection
+     * method.
+     */
+    private static void writeToStream(OutputStream outputStream, String bodyString)
+            throws IOException{
+        OutputStreamWriter outputStreamWriter =
+                new OutputStreamWriter(outputStream, Charset.forName("UTF-8"));
         BufferedWriter writer = new BufferedWriter(outputStreamWriter);
         writer.write(bodyString);
         writer.flush();
         writer.close();
     }
 
-    public static JSONObject convertResponseToJSON(String strJSON) {
+    /**
+     * @param strJSON - String.
+     * @return - JSONObject.
+     */
+    private static JSONObject convertResponseToJSON(String strJSON) {
         boolean success = false;
         String errorMessage = "";
         JSONObject resultJSON = null;
@@ -165,7 +199,12 @@ public final class CursometerUtils {
         return resultJSON;
     }
 
-    public static boolean isConnectionOK(HttpURLConnection urlConnection) {
+    /**
+     * Check connection for the response code 200.
+     * @param urlConnection - HttpURLConnection object.
+     * @return boolean value.
+     */
+    private static boolean isConnectionOK(HttpURLConnection urlConnection) {
         try {
             if (urlConnection.getResponseCode() != 200) {
                 throw new IOException("Connection response code: " + urlConnection.getResponseCode()
@@ -178,8 +217,14 @@ public final class CursometerUtils {
         return true;
     }
 
-    public static String makeAuthorizationPostRequest(String urlString, String userID) {
+    /**
+     * @param urlString - API authorization request endpoint.
+     * @param userID - unique usr ID.
+     * @return - cookies as String.
+     */
+    static String makeAuthorizationPostRequest(String urlString, String userID) {
         HttpURLConnection urlConnection = createConnection(createUrl(urlString), "POST", null);
+        // Body format of the request is hardcoded:
         writeToConnection(urlConnection, "{\"userID\":\"" + userID + "\"}");
         String resultBody = readFromConnection(urlConnection);
         String tempCookiesString = getCookiesString(urlConnection);
@@ -190,13 +235,18 @@ public final class CursometerUtils {
         }
         urlConnection.disconnect();
 
-        // Call this method to check if response is okay:
+        // Calling following method to check if response is okay (success : true):
         convertResponseToJSON(resultBody);
 
         return tempCookiesString;
     }
 
-    public static JSONObject makeGetRequest(String urlString, String cookiesString) {
+    /**
+     * @param urlString - API endpoint.
+     * @param cookiesString - cookies.
+     * @return - body of the response as String.
+     */
+    static JSONObject makeGetRequest(String urlString, String cookiesString) {
         HttpURLConnection urlConnection = createConnection(createUrl(urlString), "GET",
                 cookiesString);
         String resultBody = readFromConnection(urlConnection);
@@ -210,7 +260,14 @@ public final class CursometerUtils {
         return convertResponseToJSON(resultBody);
     }
 
-    public static JSONObject makePostRequest(String urlString, String cookiesString, String bodyString) {
+    /**
+     * @param urlString - API endpoint.
+     * @param cookiesString - cookies.
+     * @param bodyString - body of the "POST" request.
+     * @return - body of the response as String.
+     */
+    public static JSONObject makePostRequest(String urlString, String cookiesString,
+                                             String bodyString) {
         HttpURLConnection urlConnection = createConnection(createUrl(urlString), "POST",
                 cookiesString);
         writeToConnection(urlConnection, bodyString);
@@ -225,13 +282,16 @@ public final class CursometerUtils {
         return convertResponseToJSON(resultBody);
     }
 
-    public static SubscribedData getDataFromJSONResponse(JSONObject receivedData) {
+    /**
+     * Convert JSONObject with a currencies subscription list to the SubscribedData object.
+     * @param receivedData - JSONObject object.
+     * @return - SubscribedData object.
+     */
+    static SubscribedData getDataFromJSONResponse(JSONObject receivedData) {
         SubscribedData resultData = new SubscribedData();
         try {
             JSONArray sourceSubCurrencyPairs = receivedData.getJSONArray("subscriptionCategories");
-            Log.v(LOG_TAG, "N of CurrPairs: " + sourceSubCurrencyPairs.length());
             for (int i = 0; i < sourceSubCurrencyPairs.length(); i++) {
-                Log.e(LOG_TAG, "Index counter: " + i);
 
                 JSONObject sourceOneCurrPair = sourceSubCurrencyPairs.getJSONObject(i);
                 SubscribedData.CurrencyPair resOneCurrencyPair = new SubscribedData.CurrencyPair();
@@ -240,7 +300,7 @@ public final class CursometerUtils {
                 resOneCurrencyPair.setFullName(sourceOneCurrPair.getString("fullName"));
 
                 JSONArray sourceAllBanks = sourceOneCurrPair.getJSONArray("sources");
-                ArrayList<SubscribedData.Bank> resAllBanks = new ArrayList<SubscribedData.Bank>();
+                ArrayList<SubscribedData.Bank> resAllBanks = new ArrayList<>();
                 for (int j = 0; j < sourceAllBanks.length(); j++) {
 
                     JSONObject sourceOneBank = sourceAllBanks.getJSONObject(j);
@@ -249,7 +309,7 @@ public final class CursometerUtils {
                     resOneBank.setId(getInteger(sourceOneBank, "id"));
 
                     JSONArray sourceBankQuotList = sourceOneBank.getJSONArray("ranges");
-                    ArrayList<SubscribedData.Quotation> resBankQuotList = new ArrayList<SubscribedData.Quotation>();
+                    ArrayList<SubscribedData.Quotation> resBankQuotList = new ArrayList<>();
 
                     for (int k = 0; k < sourceBankQuotList.length(); k++) {
                         JSONObject sourceOneQoutation = sourceBankQuotList.getJSONObject(k);
@@ -257,7 +317,8 @@ public final class CursometerUtils {
                         resOneQuotation.setId(getInteger(sourceOneQoutation, "id"));
                         resOneQuotation.setFrom(getInteger(sourceOneQoutation, "range"));
                         resOneQuotation.setBuyPriceNow(getFloat(sourceOneQoutation, "buyPriceNow"));
-                        resOneQuotation.setSalePriceNow(getFloat(sourceOneQoutation, "salePriceNow"));
+                        resOneQuotation.
+                                setSalePriceNow(getFloat(sourceOneQoutation, "salePriceNow"));
                         resOneQuotation.setDateTime(sourceOneQoutation.getString("inserDateTime"));
 
                         ArrayList<SubscribedData.Trigger> triggers = new ArrayList<>();
@@ -298,8 +359,10 @@ public final class CursometerUtils {
 
                         resOneQuotation.setTriggers(triggers);
                         resOneQuotation.setPrecision(getInteger(sourceOneQoutation,"precision"));
-                        resOneQuotation.setShowSelPrice(sourceOneQoutation.getBoolean("showSellPrice"));
-                        resOneQuotation.setTriggerFireType(getInteger(sourceOneQoutation, "triggerFireType"));
+                        resOneQuotation.
+                                setShowSelPrice(sourceOneQoutation.getBoolean("showSellPrice"));
+                        resOneQuotation.setTriggerFireType(
+                                getInteger(sourceOneQoutation, "triggerFireType"));
 
                         resBankQuotList.add(resOneQuotation);
                     }
