@@ -14,7 +14,6 @@ import android.os.Bundle;
 import java.util.ArrayList;
 import java.util.List;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -209,7 +208,7 @@ public class MainActivity extends AppCompatActivity
      */
     @Override
     public AsyncTaskLoader<SubscribedData> onCreateLoader(int id, Bundle args) {
-        return new AsyncTaskRatesLoader(this, args.getString("url"), args.getString("cookies"));
+        return new AsyncTaskAppDataLoader(this, args.getString("url"), args.getString("cookies"));
         }
 
     @Override
