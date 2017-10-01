@@ -30,6 +30,6 @@ class AsyncTaskAppDataLoader extends AsyncTaskLoader<SubscribedData> {
     @Override
     public SubscribedData loadInBackground() {
         JSONObject jsonResponse = CursometerUtils.makeGetRequest(urlString, cookiesString);
-        return CursometerUtils.getDataFromJSONResponse2(jsonResponse);
+        return CursometerUtils.getDataFromJSONResponse(jsonResponse);
     }
 }

@@ -225,58 +225,7 @@ public final class CursometerUtils {
         return convertResponseToJSON(resultBody);
     }
 
-    public static List<CurrenciesRates> getDataFromJSONResponse(JSONObject receivedData) {
-
-        ArrayList<CurrenciesRates> resAllCurrencies = new ArrayList<CurrenciesRates>();
-        try {
-            JSONArray sourceAllCurrencies = receivedData.getJSONArray("subscriptionCategories");
-
-            for (int i = 0; i < sourceAllCurrencies.length(); i++) {
-                JSONObject sourceOneCurrPair = sourceAllCurrencies.getJSONObject(i);
-                JSONArray sourceAllBanks = sourceOneCurrPair.getJSONArray("sources");
-                ArrayList<BankRates> resAllBanks = new ArrayList<BankRates>();
-
-                for (int j = 0; j < sourceAllBanks.length(); j++) {
-
-                    // Create BankRates
-                    JSONObject sourceOneBank = sourceAllBanks.getJSONObject(j);
-
-                    // create list with quotation
-                    JSONArray sourceBankRatesList = sourceOneBank.getJSONArray("ranges");
-                    ArrayList<ExchangeRate> resBankRatesList = new ArrayList<ExchangeRate>();
-
-                    for (int k = 0; k < sourceBankRatesList.length(); k++) {
-                        JSONObject sourceOneRate = sourceBankRatesList.getJSONObject(k);
-                        ExchangeRate resOneRate = new ExchangeRate(
-                                sourceOneRate.getInt("range"),
-                                (float) sourceOneRate.getDouble("buyPriceNow"),
-                                (float) sourceOneRate.getDouble("salePriceNow"));
-                        resBankRatesList.add(resOneRate);
-                    }
-                    // create list of quotation end.
-
-                    BankRates resOneBank = new BankRates(
-                            sourceOneBank.getString("name"),
-                            resBankRatesList);
-                    // Create BankRates end
-
-                    resAllBanks.add(resOneBank);
-                }
-                CurrenciesRates resOneCurrenciesRates = new CurrenciesRates(
-                        sourceOneCurrPair.getString("fullName"),
-                        sourceOneCurrPair.getString("name"),
-                        resAllBanks);
-                resAllCurrencies.add(resOneCurrenciesRates);
-            }
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        return resAllCurrencies;
-    }
-
-    public static SubscribedData getDataFromJSONResponse2(JSONObject receivedData) {
+    public static SubscribedData getDataFromJSONResponse(JSONObject receivedData) {
         SubscribedData resultData = new SubscribedData();
         try {
             JSONArray sourceSubCurrencyPairs = receivedData.getJSONArray("subscriptionCategories");
@@ -293,12 +242,12 @@ public final class CursometerUtils {
                 JSONArray sourceAllBanks = sourceOneCurrPair.getJSONArray("sources");
                 ArrayList<SubscribedData.Bank> resAllBanks = new ArrayList<SubscribedData.Bank>();
                 for (int j = 0; j < sourceAllBanks.length(); j++) {
-                    // Create BankRates
+
                     JSONObject sourceOneBank = sourceAllBanks.getJSONObject(j);
                     SubscribedData.Bank resOneBank = new SubscribedData.Bank();
                     resOneBank.setName(sourceOneBank.getString("name"));
                     resOneBank.setId(getInteger(sourceOneBank, "id"));
-                    // create list with quotation
+
                     JSONArray sourceBankQuotList = sourceOneBank.getJSONArray("ranges");
                     ArrayList<SubscribedData.Quotation> resBankQuotList = new ArrayList<SubscribedData.Quotation>();
 
@@ -354,7 +303,7 @@ public final class CursometerUtils {
 
                         resBankQuotList.add(resOneQuotation);
                     }
-                    // create list of quotation end.
+
                     resOneBank.setQuotations(resBankQuotList);
                     resAllBanks.add(resOneBank);
                 }
