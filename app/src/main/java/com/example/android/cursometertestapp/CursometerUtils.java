@@ -400,4 +400,29 @@ final class CursometerUtils {
         }
         return -1.0f;
     }
+
+    /**
+     * Returns true if value is in interval from lower to upper margin (inclusive). If all margins
+     * or value is negative - returns false.
+     * @param value - float value.
+     * @param lowerMargin - float lower margin.
+     * @param upperMargin - float upper margin
+     * @return boolean, true if value is in interval from lower to upper margin (inclusive).
+     */
+    public static boolean isValueInMargin(float value, float lowerMargin, float upperMargin){
+        if (value < 0) {
+            return false;
+        }
+        if ((lowerMargin < 0) && (upperMargin < 0)) {
+            return false;
+        }
+        if (lowerMargin > value) {
+            return false;
+        }
+        if ((upperMargin < value))
+            if ((upperMargin >= 0)) {
+                return false;
+            }
+        return true;
+    }
 }

@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">CursometerTestApp</string>
+    <string name = "from">From: %d</string>
 </resources>

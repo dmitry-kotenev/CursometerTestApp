@@ -11,6 +11,8 @@ import android.util.AttributeSet;
 import android.view.View;
 
 /**
+ * Class determines behaviour of FAB. FAB hides while scrolling down and appears while scrolling up.
+ *
  * Класс, определяющий поведение FAB. Скрывает FAB при скролле вниз, и показывает при скролле вверх.
  *
  * https://guides.codepath.com/android/Floating-Action-Buttons
