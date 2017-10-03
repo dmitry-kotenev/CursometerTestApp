@@ -290,7 +290,7 @@ final class CursometerUtils {
      * @param receivedData - JSONObject object.
      * @return - SubscribedData object.
      */
-    static SubscribedData getDataFromJSONResponse(JSONObject receivedData) {
+    static SubscribedData getSubscribedDataFromJSONResponse(JSONObject receivedData) {
         SubscribedData resultData = new SubscribedData();
         try {
             JSONArray sourceSubCurrencyPairs = receivedData.getJSONArray("subscriptionCategories");
@@ -376,6 +376,41 @@ final class CursometerUtils {
                 }
                 resOneCurrencyPair.setBanks(resAllBanks);
                 resultData.add(resOneCurrencyPair);
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return resultData;
+    }
+
+    static AvailableCurrenciesData getAvailableCurrenciesDataFromJSON(JSONObject receivedData) {
+        AvailableCurrenciesData resultData = new AvailableCurrenciesData();
+        try {
+            JSONArray sourceAvailCurrencyPairs = receivedData.getJSONArray("currencies");
+            for (int i = 0; i < sourceAvailCurrencyPairs.length(); i++) {
+                JSONObject sourceOneCurrencyPair = sourceAvailCurrencyPairs.getJSONObject(i);
+                AvailableCurrenciesData.CurrenciesPair resultOneCurrencyPair =
+                        new AvailableCurrenciesData.CurrenciesPair();
+                resultOneCurrencyPair.setId(sourceOneCurrencyPair.getInt("id"));
+                resultOneCurrencyPair.setName(sourceOneCurrencyPair.getString("name"));
+                resultOneCurrencyPair.setFullName(sourceOneCurrencyPair.getString("fullName"));
+                resultOneCurrencyPair.setEnable(sourceOneCurrencyPair.getBoolean("enable"));
+
+                //...
+
+                JSONArray sourceListOfBanks = sourceOneCurrencyPair.getJSONArray("sources");
+                for (int j = 0; j < sourceListOfBanks.length(); j++) {
+                    JSONObject sourceOneBank = sourceListOfBanks.getJSONObject(j);
+                    AvailableCurrenciesData.Bank resultOneBank = new AvailableCurrenciesData.Bank();
+                    resultOneBank.setId(sourceOneBank.getInt("id"));
+                    resultOneBank.setName(sourceOneBank.getString("name"));
+                    resultOneBank.setSubscribed(sourceOneBank.getBoolean("subscribed"));
+                    resultOneCurrencyPair.add(resultOneBank);
+
+                    //...
+
+                }
+                resultData.add(resultOneCurrencyPair);
             }
         } catch (JSONException e) {
             e.printStackTrace();

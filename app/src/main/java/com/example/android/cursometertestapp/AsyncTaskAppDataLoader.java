@@ -36,6 +36,7 @@ class AsyncTaskAppDataLoader extends AsyncTaskLoader<SubscribedData> {
         JSONObject jsonResponse = CursometerUtils.makeGetRequest(urlCurrentSubscriptionString,
                 cookiesString);
 
+        // for testing (start):
         JSONObject jsonResponse2 = CursometerUtils.makePostRequest(urlAvailableCurrString,
                 cookiesString,
                 "{\"lang\": 0}" /* temporarily hardcoded. */);
@@ -43,6 +44,15 @@ class AsyncTaskAppDataLoader extends AsyncTaskLoader<SubscribedData> {
             Log.v(LOG_TAG, "Available currencies in JSON: " + jsonResponse2.toString());
         }
 
-        return CursometerUtils.getDataFromJSONResponse(jsonResponse);
+        AvailableCurrenciesData availCurrData =
+                CursometerUtils.getAvailableCurrenciesDataFromJSON(jsonResponse2);
+        String toPrint = "";
+        for (int i = 0; i < availCurrData.size(); i++) {
+            toPrint += (availCurrData.getCurrenciesPair(i).getName() + "; ");
+        }
+        Log.v(LOG_TAG, "Currencies pairs in program data: " + toPrint);
+        // for testing (end).
+
+        return CursometerUtils.getSubscribedDataFromJSONResponse(jsonResponse);
     }
 }
