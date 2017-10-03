@@ -113,7 +113,7 @@ class ItemsAdapter extends RecyclerView.Adapter<ItemsAdapter.ViewHolder> {
         return mQuotations.size();
     }
 
-    public void setData(List<SubscribedData.Quotation> quotations, boolean showSalePrice){
+    void setData(List<SubscribedData.Quotation> quotations, boolean showSalePrice){
         this.mQuotations = quotations;
         this.mShowSalePrice = showSalePrice;
     }

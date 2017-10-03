@@ -6,27 +6,27 @@ import java.util.ArrayList;
  * Class represents data about quotations
  */
 
-public class SubscribedData extends ArrayList<SubscribedData.CurrencyPair> {
+class SubscribedData extends ArrayList<SubscribedData.CurrencyPair> {
 
-    public static final int BUY_MIN = 0;
-    public static final int BUY_MAX = 1;
-    public static final int SALE_MIN = 2;
-    public static final int SALE_MAX = 3;
+    static final int BUY_MIN = 0;
+    static final int BUY_MAX = 1;
+    static final int SALE_MIN = 2;
+    static final int SALE_MAX = 3;
     public static final int NOTIFY_PERMANENT = 0;
     public static final int NOTIFY_ONCE = 1;
 
-    public CurrencyPair getCurrencyPair(int index) {
+    CurrencyPair getCurrencyPair(int index) {
         return get(index);
     }
 
-    public static class Trigger {
+    static class Trigger {
 
         private int triggerId = -1;
         private int triggerFireType = -1;
         private int triggerType = -1;
         private float value = -1;
 
-        public Trigger(int triggerId, int triggerFireType, int triggerType, float value) {
+        Trigger(int triggerId, int triggerFireType, int triggerType, float value) {
             this.triggerId = triggerId;
             this.triggerFireType = triggerFireType;
             this.triggerType = triggerType;
@@ -57,7 +57,7 @@ public class SubscribedData extends ArrayList<SubscribedData.CurrencyPair> {
             this.triggerType = triggerType;
         }
 
-        public float getValue() {
+        float getValue() {
             return value;
         }
 
@@ -66,7 +66,7 @@ public class SubscribedData extends ArrayList<SubscribedData.CurrencyPair> {
         }
     }
 
-    public static class Quotation {
+    static class Quotation {
         private int id = -1;
         private int from = -1;
         private float buyPriceNow = -1;
@@ -77,14 +77,14 @@ public class SubscribedData extends ArrayList<SubscribedData.CurrencyPair> {
         boolean showSelPrice;
         int triggerFireType = -1;
 
-        public Quotation() {
-            this.triggers = new ArrayList<Trigger>();
+        Quotation() {
+            this.triggers = new ArrayList<>();
             for (int i = 0; i < 4; i++) {
                 triggers.add(null);
             }
         }
 
-        public Trigger getTrigger(int triggerType) {
+        Trigger getTrigger(int triggerType) {
             return getTriggers().get(triggerType);
         }
 
@@ -104,35 +104,35 @@ public class SubscribedData extends ArrayList<SubscribedData.CurrencyPair> {
             this.from = from;
         }
 
-        public float getBuyPriceNow() {
+        float getBuyPriceNow() {
             return buyPriceNow;
         }
 
-        public void setBuyPriceNow(float buyPriceNow) {
+        void setBuyPriceNow(float buyPriceNow) {
             this.buyPriceNow = buyPriceNow;
         }
 
-        public float getSalePriceNow() {
+        float getSalePriceNow() {
             return salePriceNow;
         }
 
-        public void setSalePriceNow(float salePriceNow) {
+        void setSalePriceNow(float salePriceNow) {
             this.salePriceNow = salePriceNow;
         }
 
-        public String getDateTime() {
+        String getDateTime() {
             return dateTime;
         }
 
-        public void setDateTime(String dateTime) {
+        void setDateTime(String dateTime) {
             this.dateTime = dateTime;
         }
 
-        public int getPrecision() {
+        int getPrecision() {
             return precision;
         }
 
-        public void setPrecision(int precision) {
+        void setPrecision(int precision) {
             this.precision = precision;
         }
 
@@ -140,7 +140,7 @@ public class SubscribedData extends ArrayList<SubscribedData.CurrencyPair> {
             return showSelPrice;
         }
 
-        public void setShowSelPrice(boolean showSelPrice) {
+        void setShowSelPrice(boolean showSelPrice) {
             this.showSelPrice = showSelPrice;
         }
 
@@ -148,43 +148,43 @@ public class SubscribedData extends ArrayList<SubscribedData.CurrencyPair> {
             return triggerFireType;
         }
 
-        public void setTriggerFireType(Integer triggerFireType) {
+        void setTriggerFireType(Integer triggerFireType) {
             this.triggerFireType = triggerFireType;
         }
 
-        public ArrayList<Trigger> getTriggers() {
+        ArrayList<Trigger> getTriggers() {
             return triggers;
         }
 
-        public void setTriggers(ArrayList<Trigger> triggers) {
+        void setTriggers(ArrayList<Trigger> triggers) {
             this.triggers = triggers;
         }
     }
 
-    public static class Bank {
+    static class Bank {
         private String name;
         private int id = -1;
         private ArrayList<Quotation> quotations;
 
-        public boolean isShowSellPrice() {
+        boolean isShowSellPrice() {
             return showSellPrice;
         }
 
-        public void setShowSellPrice(boolean showSellPrice) {
+        void setShowSellPrice(boolean showSellPrice) {
             this.showSellPrice = showSellPrice;
         }
 
         private boolean showSellPrice;
 
-        public Quotation getQuotation(int quotationIndex) {
+        Quotation getQuotation(int quotationIndex) {
             return getQuotations().get(quotationIndex);
         }
 
-        public String getName() {
+        String getName() {
             return name;
         }
 
-        public void setName(String name) {
+        void setName(String name) {
             this.name = name;
         }
 
@@ -196,16 +196,16 @@ public class SubscribedData extends ArrayList<SubscribedData.CurrencyPair> {
             this.id = id;
         }
 
-        public ArrayList<Quotation> getQuotations() {
+        ArrayList<Quotation> getQuotations() {
             return quotations;
         }
 
-        public void setQuotations(ArrayList<Quotation> quotations) {
+        void setQuotations(ArrayList<Quotation> quotations) {
             this.quotations = quotations;
         }
     }
 
-    public static class CurrencyPair {
+    static class CurrencyPair {
         private int id;
         private String name;
         private String fullName;
@@ -223,11 +223,11 @@ public class SubscribedData extends ArrayList<SubscribedData.CurrencyPair> {
             this.id = id;
         }
 
-        public String getName() {
+        String getName() {
             return name;
         }
 
-        public void setName(String name) {
+        void setName(String name) {
             this.name = name;
         }
 
@@ -235,15 +235,15 @@ public class SubscribedData extends ArrayList<SubscribedData.CurrencyPair> {
             return fullName;
         }
 
-        public void setFullName(String fullName) {
+        void setFullName(String fullName) {
             this.fullName = fullName;
         }
 
-        public ArrayList<Bank> getBanks() {
+        ArrayList<Bank> getBanks() {
             return banks;
         }
 
-        public void setBanks(ArrayList<Bank> banks) {
+        void setBanks(ArrayList<Bank> banks) {
             this.banks = banks;
         }
     }
