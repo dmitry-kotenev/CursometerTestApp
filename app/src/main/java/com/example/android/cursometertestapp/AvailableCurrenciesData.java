@@ -67,6 +67,8 @@ class AvailableCurrenciesData extends ArrayList<AvailableCurrenciesData.Currenci
 
     static class Bank {
         int id;
+        String name;
+        boolean subscribed;
 
         public int getId() {
             return id;
@@ -91,8 +93,5 @@ class AvailableCurrenciesData extends ArrayList<AvailableCurrenciesData.Currenci
         public void setSubscribed(boolean subscribed) {
             this.subscribed = subscribed;
         }
-
-        String name;
-        boolean subscribed;
     }
 }
