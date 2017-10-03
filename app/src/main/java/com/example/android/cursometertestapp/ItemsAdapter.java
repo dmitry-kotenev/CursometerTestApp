@@ -10,7 +10,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-
 import java.text.DecimalFormat;
 import java.util.List;
 
@@ -31,8 +30,6 @@ class ItemsAdapter extends RecyclerView.Adapter<ItemsAdapter.ViewHolder> {
         private ImageView mBuyRingImgView;
         private ImageView mSaleRingImgView;
         private View mDividerLine;
-        private int sourceId;
-        private String setNotificationsTitle;
         private Context mContext;
 
         ViewHolder(View oneItemView){
@@ -49,7 +46,7 @@ class ItemsAdapter extends RecyclerView.Adapter<ItemsAdapter.ViewHolder> {
 
         @Override
         public void onClick(View v) {
-            Log.e("ItemsAdapter", "Item is clicked. Purchase Price " + sourceId);
+            Log.e("ItemsAdapter", "Item is clicked. Position: " + getAdapterPosition());
             Intent intent = new Intent(v.getContext(), SetNotificationsActivity.class);
             v.getContext().startActivity(intent);
         }
@@ -68,7 +65,6 @@ class ItemsAdapter extends RecyclerView.Adapter<ItemsAdapter.ViewHolder> {
         Resources res = holder.mContext.getResources();
         holder.mMinAmountTxtView.setText(
                 res.getString(R.string.from, mQuotations.get(position).getFrom()));
-        //holder.mMinAmountTxtView.setText("From: " + (mQuotations.get(position).getFrom()));
         int precision = mQuotations.get(position).getPrecision();
         String decimalPaceHolder;
         if (precision < 1) {
@@ -79,12 +75,9 @@ class ItemsAdapter extends RecyclerView.Adapter<ItemsAdapter.ViewHolder> {
         for (int i = 0; i < precision; i++) {
             decimalPaceHolder =  decimalPaceHolder + "#";
         }
-        Log.v("ItemsAdapter", "Precision: " + precision + "; placeholder: " + decimalPaceHolder);
         DecimalFormat df = new DecimalFormat(decimalPaceHolder);
-        Log.v("ItemsAdapter", "Formatted value: " + df.format(1234.56789123));
         holder.mSalePriceTxtView.setText(df.format(mQuotations.get(position).getSalePriceNow()));
         holder.mBuyPriceTxtView.setText(df.format(mQuotations.get(position).getBuyPriceNow()));
-        holder.sourceId = mQuotations.get(position).getId();
 
         if (position == (getItemCount() - 1)){
             holder.mDividerLine.setVisibility(View.GONE);
@@ -92,40 +85,19 @@ class ItemsAdapter extends RecyclerView.Adapter<ItemsAdapter.ViewHolder> {
             holder.mDividerLine.setVisibility(View.VISIBLE);
         }
 
-        float currentBuyPrice = mQuotations.get(position).getBuyPriceNow();
-        float currentSalePrice = mQuotations.get(position).getSalePriceNow();
-        float buyMaxMargin =  mQuotations.
-                get(position).getTrigger(SubscribedData.BUY_MAX).getValue();
-        float buyMinMargin =  mQuotations.
-                get(position).getTrigger(SubscribedData.BUY_MIN).getValue();
-        float saleMaxMargin =  mQuotations.
-                get(position).getTrigger(SubscribedData.SALE_MAX).getValue();
-        float saleMinMargin =  mQuotations.
-                get(position).getTrigger(SubscribedData.SALE_MIN).getValue();
+        CursometerUtils.setupRingAppearance(holder.mBuyRingImgView,
+                mQuotations.get(position).getBuyPriceNow(),
+                mQuotations.get(position).getTrigger(SubscribedData.BUY_MIN).getValue(),
+                mQuotations.get(position).getTrigger(SubscribedData.BUY_MAX).getValue(),
+                R.drawable.icn_notification_green,
+                R.drawable.icn_notification_red);
 
-        if (buyMaxMargin < 0){
-            if (buyMinMargin < 0) {
-                holder.mBuyRingImgView.setVisibility(View.INVISIBLE);
-            }
-        } else if (CursometerUtils.isValueInMargin(currentBuyPrice, buyMinMargin, buyMaxMargin)) {
-            holder.mBuyRingImgView.setImageResource(R.drawable.icn_notification_green);
-            holder.mBuyRingImgView.setVisibility(View.VISIBLE);
-        } else {
-            holder.mBuyRingImgView.setImageResource(R.drawable.icn_notification_red);
-            holder.mBuyRingImgView.setVisibility(View.VISIBLE);
-        }
-
-        if (saleMaxMargin < 0){
-            if (saleMinMargin < 0) {
-                holder.mSaleRingImgView.setVisibility(View.INVISIBLE);
-            }
-        } else if (CursometerUtils.isValueInMargin(currentSalePrice, saleMinMargin, saleMaxMargin)) {
-            holder.mSaleRingImgView.setImageResource(R.drawable.icn_notification_green);
-            holder.mSaleRingImgView.setVisibility(View.VISIBLE);
-        } else {
-            holder.mSaleRingImgView.setImageResource(R.drawable.icn_notification_red);
-            holder.mSaleRingImgView.setVisibility(View.VISIBLE);
-        }
+        CursometerUtils.setupRingAppearance(holder.mSaleRingImgView,
+                mQuotations.get(position).getSalePriceNow(),
+                mQuotations.get(position).getTrigger(SubscribedData.SALE_MIN).getValue(),
+                mQuotations.get(position).getTrigger(SubscribedData.SALE_MAX).getValue(),
+                R.drawable.icn_notification_green,
+                R.drawable.icn_notification_red);
     }
 
     @Override

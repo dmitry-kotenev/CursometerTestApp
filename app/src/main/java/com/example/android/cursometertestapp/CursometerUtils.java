@@ -3,6 +3,9 @@ package com.example.android.cursometertestapp;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.View;
+import android.widget.ImageView;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -409,7 +412,7 @@ final class CursometerUtils {
      * @param upperMargin - float upper margin
      * @return boolean, true if value is in interval from lower to upper margin (inclusive).
      */
-    public static boolean isValueInMargin(float value, float lowerMargin, float upperMargin){
+    private static boolean isValueInMargin(float value, float lowerMargin, float upperMargin){
         if (value < 0) {
             return false;
         }
@@ -425,4 +428,31 @@ final class CursometerUtils {
             }
         return true;
     }
+
+    /**
+     * Setup drawable resource to the image and image visibility in accordance of belonging value
+     * to the interval from lowMargin to upMargin.
+     * @param img - ImageView.
+     * @param value - float value.
+     * @param lowMargin - float lower margin.
+     * @param upMargin - float upper margin.
+     * @param inMarginImageResourceId - drawable resource ID.
+     * @param outOfMarginImageRecourseId - drawable resourc ID.
+     */
+    static void setupRingAppearance(ImageView img, float value, float lowMargin, float upMargin,
+                                 int inMarginImageResourceId, int outOfMarginImageRecourseId) {
+        if (upMargin < 0){
+            if (lowMargin < 0) {
+                img.setVisibility(View.INVISIBLE);
+            }
+        } else if (isValueInMargin(value, lowMargin, upMargin)) {
+            img.setImageResource(inMarginImageResourceId);
+            img.setVisibility(View.VISIBLE);
+        } else {
+            img.setImageResource(outOfMarginImageRecourseId);
+            img.setVisibility(View.VISIBLE);
+        }
+
+    }
+
 }
