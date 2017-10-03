@@ -310,6 +310,7 @@ final class CursometerUtils {
                     SubscribedData.Bank resOneBank = new SubscribedData.Bank();
                     resOneBank.setName(sourceOneBank.getString("name"));
                     resOneBank.setId(getInteger(sourceOneBank, "id"));
+                    resOneBank.setShowSellPrice(sourceOneBank.getBoolean("showSellPrice"));
 
                     JSONArray sourceBankQuotList = sourceOneBank.getJSONArray("ranges");
                     ArrayList<SubscribedData.Quotation> resBankQuotList = new ArrayList<>();

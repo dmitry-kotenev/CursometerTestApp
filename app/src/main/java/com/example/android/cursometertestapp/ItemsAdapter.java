@@ -22,6 +22,7 @@ import java.util.List;
 class ItemsAdapter extends RecyclerView.Adapter<ItemsAdapter.ViewHolder> {
 
     private List<SubscribedData.Quotation> mQuotations;
+    private boolean mShowSalePrice;
 
     static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         private TextView mMinAmountTxtView;
@@ -65,6 +66,7 @@ class ItemsAdapter extends RecyclerView.Adapter<ItemsAdapter.ViewHolder> {
         Resources res = holder.mContext.getResources();
         holder.mMinAmountTxtView.setText(
                 res.getString(R.string.from, mQuotations.get(position).getFrom()));
+
         int precision = mQuotations.get(position).getPrecision();
         String decimalPaceHolder;
         if (precision < 1) {
@@ -76,15 +78,8 @@ class ItemsAdapter extends RecyclerView.Adapter<ItemsAdapter.ViewHolder> {
             decimalPaceHolder =  decimalPaceHolder + "#";
         }
         DecimalFormat df = new DecimalFormat(decimalPaceHolder);
-        holder.mSalePriceTxtView.setText(df.format(mQuotations.get(position).getSalePriceNow()));
+
         holder.mBuyPriceTxtView.setText(df.format(mQuotations.get(position).getBuyPriceNow()));
-
-        if (position == (getItemCount() - 1)){
-            holder.mDividerLine.setVisibility(View.GONE);
-        } else {
-            holder.mDividerLine.setVisibility(View.VISIBLE);
-        }
-
         CursometerUtils.setupRingAppearance(holder.mBuyRingImgView,
                 mQuotations.get(position).getBuyPriceNow(),
                 mQuotations.get(position).getTrigger(SubscribedData.BUY_MIN).getValue(),
@@ -92,12 +87,25 @@ class ItemsAdapter extends RecyclerView.Adapter<ItemsAdapter.ViewHolder> {
                 R.drawable.icn_notification_green,
                 R.drawable.icn_notification_red);
 
-        CursometerUtils.setupRingAppearance(holder.mSaleRingImgView,
-                mQuotations.get(position).getSalePriceNow(),
-                mQuotations.get(position).getTrigger(SubscribedData.SALE_MIN).getValue(),
-                mQuotations.get(position).getTrigger(SubscribedData.SALE_MAX).getValue(),
-                R.drawable.icn_notification_green,
-                R.drawable.icn_notification_red);
+        if (mShowSalePrice) {
+            holder.mSalePriceTxtView.setText(df.format(mQuotations.get(position).getSalePriceNow()));
+            CursometerUtils.setupRingAppearance(holder.mSaleRingImgView,
+                    mQuotations.get(position).getSalePriceNow(),
+                    mQuotations.get(position).getTrigger(SubscribedData.SALE_MIN).getValue(),
+                    mQuotations.get(position).getTrigger(SubscribedData.SALE_MAX).getValue(),
+                    R.drawable.icn_notification_green,
+                    R.drawable.icn_notification_red);
+            holder.mSalePriceTxtView.setVisibility(View.VISIBLE);
+        } else {
+            holder.mSalePriceTxtView.setVisibility(View.INVISIBLE);
+            holder.mSaleRingImgView.setVisibility(View.INVISIBLE);
+        }
+
+        if (position == (getItemCount() - 1)){
+            holder.mDividerLine.setVisibility(View.GONE);
+        } else {
+            holder.mDividerLine.setVisibility(View.VISIBLE);
+        }
     }
 
     @Override
@@ -105,7 +113,8 @@ class ItemsAdapter extends RecyclerView.Adapter<ItemsAdapter.ViewHolder> {
         return mQuotations.size();
     }
 
-    public void setData(List<SubscribedData.Quotation> quotations){
+    public void setData(List<SubscribedData.Quotation> quotations, boolean showSalePrice){
         this.mQuotations = quotations;
+        this.mShowSalePrice = showSalePrice;
     }
 }

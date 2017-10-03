@@ -81,7 +81,8 @@ class CardsAdapter extends RecyclerView.Adapter<CardsAdapter.ViewHolder> {
         // From of representation of date and time is needed to be updated too.
         holder.mDateAndTimeTextView.setText(mListOfBanks.get(position).getQuotation(0).
                 getDateTime());
-        holder.mItemsAdapter.setData(mListOfBanks.get(position).getQuotations());
+        SubscribedData.Bank bank = mListOfBanks.get(position);
+        holder.mItemsAdapter.setData(bank.getQuotations(), bank.isShowSellPrice());
     }
 
     @Override

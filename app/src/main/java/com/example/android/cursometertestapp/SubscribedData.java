@@ -166,6 +166,16 @@ public class SubscribedData extends ArrayList<SubscribedData.CurrencyPair> {
         private int id = -1;
         private ArrayList<Quotation> quotations;
 
+        public boolean isShowSellPrice() {
+            return showSellPrice;
+        }
+
+        public void setShowSellPrice(boolean showSellPrice) {
+            this.showSellPrice = showSellPrice;
+        }
+
+        private boolean showSellPrice;
+
         public Quotation getQuotation(int quotationIndex) {
             return getQuotations().get(quotationIndex);
         }
