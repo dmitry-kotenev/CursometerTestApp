@@ -24,7 +24,7 @@ public class CurrenciesFragment extends android.support.v4.app.Fragment implemen
     private class RefreshData implements SwipeRefreshLayout.OnRefreshListener {
         @Override
         public void onRefresh() {
-            ((MainActivity) getActivity()).refreshDataFromServer();
+            ((MainActivity) getActivity()).getDataFromServer();
         }
     }
 
@@ -68,7 +68,7 @@ public class CurrenciesFragment extends android.support.v4.app.Fragment implemen
         resultView.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                ((MainActivity) getActivity()).refreshDataFromServer();
+                ((MainActivity) getActivity()).getDataFromServer();
                 SwipeRefreshLayout view = (SwipeRefreshLayout) getView();
                 if (view != null) {
                     view.setRefreshing(false);

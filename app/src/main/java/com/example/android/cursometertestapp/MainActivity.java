@@ -30,6 +30,8 @@ public class MainActivity extends AppCompatActivity
             "http://currency.btc-solutions.ru:8080/api/CurrencySubscription?Lang=0";
     private static final String AUTHORIZATION_REQUEST_API_ENDPOINT =
             "http://currency.btc-solutions.ru:8080/api/Account";
+    private static final String AVAILABLE_CURRENCIES_REQUEST_API_ENDPOINT =
+            "http://currency.btc-solutions.ru:8080/api/CurrencyList";
 
     private static String cookiesString = null;
     // https://stackoverflow.com/questions/27856709/loading-data-from-asynctask-to-fragments-using-fragmentpageradapter
@@ -62,10 +64,7 @@ public class MainActivity extends AppCompatActivity
         @Override
         protected void onPostExecute(String tempCookiesString) {
             cookiesString = tempCookiesString;
-            Bundle bundle = new Bundle();
-            bundle.putString("url", CURRENCY_SUBSCRIPTION_REQUEST_API_ENDPOINT);
-            bundle.putString("cookies", cookiesString);
-            getSupportLoaderManager().initLoader(ASYNC_TASK_LOADER_ID, bundle, MainActivity.this);
+            getDataFromServer();
         }
     }
 
@@ -83,7 +82,8 @@ public class MainActivity extends AppCompatActivity
 
         ActionBar actionBar =  getSupportActionBar();
         if (actionBar != null) {
-            actionBar.setTitle(mApplicationCurrentSubscribedData.getCurrencyPair(position).getName());
+            actionBar.setTitle(mApplicationCurrentSubscribedData
+                    .getCurrencyPair(position).getName());
         }
 
         // Keep track of current position in view pager to set appropriate title in onLoadFinished
@@ -164,10 +164,7 @@ public class MainActivity extends AppCompatActivity
             new AuthorizationAsyncTask().
                     execute(AUTHORIZATION_REQUEST_API_ENDPOINT, "exampleid174942"); // Explicit user ID is temporarily here.
         } else {
-            Bundle bundle = new Bundle();
-            bundle.putString("url", CURRENCY_SUBSCRIPTION_REQUEST_API_ENDPOINT);
-            bundle.putString("cookies", cookiesString);
-            getSupportLoaderManager().initLoader(ASYNC_TASK_LOADER_ID, bundle, MainActivity.this);
+            getDataFromServer();
         }
     }
 
@@ -175,11 +172,8 @@ public class MainActivity extends AppCompatActivity
         return mApplicationCurrentSubscribedData;
     }
 
-    public synchronized void refreshDataFromServer() {
-        Bundle bundle = new Bundle();
-        bundle.putString("url", CURRENCY_SUBSCRIPTION_REQUEST_API_ENDPOINT);
-        bundle.putString("cookies", cookiesString);
-        getSupportLoaderManager().restartLoader(ASYNC_TASK_LOADER_ID, bundle, MainActivity.this);
+    public synchronized void getDataFromServer() {
+        getSupportLoaderManager().initLoader(ASYNC_TASK_LOADER_ID, null, MainActivity.this);
 
 
 
@@ -208,7 +202,10 @@ public class MainActivity extends AppCompatActivity
      */
     @Override
     public AsyncTaskLoader<SubscribedData> onCreateLoader(int id, Bundle args) {
-        return new AsyncTaskAppDataLoader(this, args.getString("url"), args.getString("cookies"));
+        return new AsyncTaskAppDataLoader(this,
+                CURRENCY_SUBSCRIPTION_REQUEST_API_ENDPOINT,
+                AVAILABLE_CURRENCIES_REQUEST_API_ENDPOINT,
+                cookiesString);
         }
 
     @Override
@@ -233,8 +230,8 @@ public class MainActivity extends AppCompatActivity
         switch(currentViewPagerPosition) {
             case DATA_IS_EMPTY_POS: title = "No quotations are selected.";
                 break;
-            default: title = mApplicationCurrentSubscribedData.getCurrencyPair(currentViewPagerPosition).
-                    getName();
+            default: title = mApplicationCurrentSubscribedData.
+                    getCurrencyPair(currentViewPagerPosition).getName();
         }
 
         ActionBar actionBar = getSupportActionBar();

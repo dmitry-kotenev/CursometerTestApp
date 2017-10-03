@@ -14,12 +14,16 @@ class AsyncTaskAppDataLoader extends AsyncTaskLoader<SubscribedData> {
     private static final String LOG_TAG = "AsyncTaskAppDataLoader";
 
     private String cookiesString;
-    private String urlString;
+    private String urlCurrentSubscriptionString;
+    private String urlAvailableCurrString;
 
-    AsyncTaskAppDataLoader(Context context, String urlString, String cookiesString) {
+    AsyncTaskAppDataLoader(Context context, String urlCurrentSubscriptionString,
+                           String urlAvailableCurrString, String cookiesString) {
         super(context);
         this.cookiesString = cookiesString;
-        this.urlString = urlString;
+        this.urlCurrentSubscriptionString = urlCurrentSubscriptionString;
+        this.urlAvailableCurrString = urlAvailableCurrString;
+
     }
 
     @Override
@@ -29,7 +33,16 @@ class AsyncTaskAppDataLoader extends AsyncTaskLoader<SubscribedData> {
 
     @Override
     public SubscribedData loadInBackground() {
-        JSONObject jsonResponse = CursometerUtils.makeGetRequest(urlString, cookiesString);
+        JSONObject jsonResponse = CursometerUtils.makeGetRequest(urlCurrentSubscriptionString,
+                cookiesString);
+
+        JSONObject jsonResponse2 = CursometerUtils.makePostRequest(urlAvailableCurrString,
+                cookiesString,
+                "{\"lang\": 0}" /* temporarily hardcoded. */);
+        if (jsonResponse2 != null) {
+            Log.v(LOG_TAG, "Available currencies in JSON: " + jsonResponse2.toString());
+        }
+
         return CursometerUtils.getDataFromJSONResponse(jsonResponse);
     }
 }

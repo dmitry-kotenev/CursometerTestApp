@@ -269,7 +269,7 @@ final class CursometerUtils {
      * @param bodyString - body of the "POST" request.
      * @return - body of the response as String.
      */
-    public static JSONObject makePostRequest(String urlString, String cookiesString,
+    static JSONObject makePostRequest(String urlString, String cookiesString,
                                              String bodyString) {
         HttpURLConnection urlConnection = createConnection(createUrl(urlString), "POST",
                 cookiesString);
