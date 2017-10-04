@@ -9,7 +9,7 @@ import org.json.JSONObject;
  * Class to load application data from server.
  */
 
-class AsyncTaskAppDataLoader extends AsyncTaskLoader<SubscribedData> {
+class AsyncTaskAppDataLoader extends AsyncTaskLoader<AppData> {
 
     private static final String LOG_TAG = "AsyncTaskAppDataLoader";
 
@@ -32,27 +32,18 @@ class AsyncTaskAppDataLoader extends AsyncTaskLoader<SubscribedData> {
     }
 
     @Override
-    public SubscribedData loadInBackground() {
-        JSONObject jsonResponse = CursometerUtils.makeGetRequest(urlCurrentSubscriptionString,
+    public AppData loadInBackground() {
+        AppData resultAppData = new AppData();
+        JSONObject subscribedDataJSON = CursometerUtils.makeGetRequest(urlCurrentSubscriptionString,
                 cookiesString);
-
-        // for testing (start):
-        JSONObject jsonResponse2 = CursometerUtils.makePostRequest(urlAvailableCurrString,
+        JSONObject availableCurrenciesDataJSON = CursometerUtils.
+                makePostRequest(urlAvailableCurrString,
                 cookiesString,
                 "{\"lang\": 0}" /* temporarily hardcoded. */);
-        if (jsonResponse2 != null) {
-            Log.v(LOG_TAG, "Available currencies in JSON: " + jsonResponse2.toString());
-        }
-
-        AvailableCurrenciesData availCurrData =
-                CursometerUtils.getAvailableCurrenciesDataFromJSON(jsonResponse2);
-        String toPrint = "";
-        for (int i = 0; i < availCurrData.size(); i++) {
-            toPrint += (availCurrData.getCurrenciesPair(i).getName() + "; ");
-        }
-        Log.v(LOG_TAG, "Currencies pairs in program data: " + toPrint);
-        // for testing (end).
-
-        return CursometerUtils.getSubscribedDataFromJSONResponse(jsonResponse);
+        resultAppData.setSubscribedData(CursometerUtils.
+                getSubscribedDataFromJSONResponse(subscribedDataJSON));
+        resultAppData.setAvailableCurrenciesData(CursometerUtils.
+                getAvailableCurrenciesDataFromJSON(availableCurrenciesDataJSON));
+        return resultAppData;
     }
 }

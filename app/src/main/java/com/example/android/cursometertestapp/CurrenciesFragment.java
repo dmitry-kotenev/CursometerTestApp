@@ -21,13 +21,6 @@ public class CurrenciesFragment extends android.support.v4.app.Fragment implemen
     private int positionInViewPager;
     private RecyclerView listOfCards;
 
-    private class RefreshData implements SwipeRefreshLayout.OnRefreshListener {
-        @Override
-        public void onRefresh() {
-            ((MainActivity) getActivity()).getDataFromServer();
-        }
-    }
-
     public CurrenciesFragment() {
         // Required empty public constructor
     }
@@ -80,13 +73,16 @@ public class CurrenciesFragment extends android.support.v4.app.Fragment implemen
 
     @Override
     public void onDataUpdate() {
-        SubscribedData subscribedData = ((MainActivity) getActivity()).
-                getApplicationCurrentSubscribedData();
+        AppData appData = MainActivity.getApplicationData();
         CardsAdapter mCardsAdapter;
-        if (subscribedData != null) {
-            mCardsAdapter = new CardsAdapter(subscribedData.getCurrencyPair(positionInViewPager)
-                    .getBanks());
-        }   else {
+        if (appData != null) { // Need to check getSubscribedData() too.
+                               // Think about changing AppData class to simplify emptyData check,
+                               // when it is needed.
+//            if (appData.getSubscribedData() != null) {
+                mCardsAdapter = new CardsAdapter(appData.getSubscribedData()
+                        .getCurrencyPair(positionInViewPager).getBanks());
+//            }
+        } else {
             mCardsAdapter = new CardsAdapter(new ArrayList<SubscribedData.Bank>());
         }
         listOfCards.setAdapter(mCardsAdapter);

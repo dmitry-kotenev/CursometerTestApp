@@ -395,9 +395,6 @@ final class CursometerUtils {
                 resultOneCurrencyPair.setName(sourceOneCurrencyPair.getString("name"));
                 resultOneCurrencyPair.setFullName(sourceOneCurrencyPair.getString("fullName"));
                 resultOneCurrencyPair.setEnable(sourceOneCurrencyPair.getBoolean("enable"));
-
-                //...
-
                 JSONArray sourceListOfBanks = sourceOneCurrencyPair.getJSONArray("sources");
                 for (int j = 0; j < sourceListOfBanks.length(); j++) {
                     JSONObject sourceOneBank = sourceListOfBanks.getJSONObject(j);
@@ -406,9 +403,6 @@ final class CursometerUtils {
                     resultOneBank.setName(sourceOneBank.getString("name"));
                     resultOneBank.setSubscribed(sourceOneBank.getBoolean("subscribed"));
                     resultOneCurrencyPair.add(resultOneBank);
-
-                    //...
-
                 }
                 resultData.add(resultOneCurrencyPair);
             }

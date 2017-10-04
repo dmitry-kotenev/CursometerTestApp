@@ -12,12 +12,8 @@ import android.support.v4.app.FragmentStatePagerAdapter;
 
 class CurrenciesFragmentPagerAdapter extends FragmentStatePagerAdapter {
 
-    private MainActivity mainActivityInstance;
-
-
-    CurrenciesFragmentPagerAdapter(FragmentManager fm, MainActivity mainActivity) {
+    CurrenciesFragmentPagerAdapter(FragmentManager fm) {
         super(fm);
-        mainActivityInstance = mainActivity;
     }
 
     @Override
@@ -29,10 +25,13 @@ class CurrenciesFragmentPagerAdapter extends FragmentStatePagerAdapter {
 
     @Override
     public int getCount() {
-       SubscribedData currData = mainActivityInstance.getApplicationCurrentSubscribedData();
-        if (currData == null) {
+        AppData appData = MainActivity.getApplicationData();
+        if (appData == null) {
             return 0;
         }
-        return currData.size();
+//        if (appData.getSubscribedData() == null){ // Unnecessary check.
+//            return 0;
+//        }
+        return appData.getSubscribedData().size();
     }
 }

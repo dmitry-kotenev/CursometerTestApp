@@ -15,7 +15,7 @@ public class SetNotificationsActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_set_notifications);
-        if (MainActivity.mApplicationCurrentSubscribedData == null) {
+        if (MainActivity.getApplicationData() == null) {
             NavUtils.navigateUpFromSameTask(this);
         }
     }

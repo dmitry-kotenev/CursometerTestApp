@@ -19,7 +19,7 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
 public class MainActivity extends AppCompatActivity
-        implements LoaderManager.LoaderCallbacks<SubscribedData>,
+        implements LoaderManager.LoaderCallbacks<AppData>,
         ViewPager.OnPageChangeListener {
 
     private static final int DATA_IS_EMPTY_POS = -1; // for currentViewPagerPosition variable.
@@ -35,7 +35,7 @@ public class MainActivity extends AppCompatActivity
 
     private static String cookiesString = null;
     // https://stackoverflow.com/questions/27856709/loading-data-from-asynctask-to-fragments-using-fragmentpageradapter
-    public static SubscribedData mApplicationCurrentSubscribedData = null;
+    private static AppData mApplicationData = null;
     private static int currentViewPagerPosition = DATA_IS_NULL_POS;
 
     // Container to keep track of fragments that need update, when data is changed:
@@ -82,8 +82,8 @@ public class MainActivity extends AppCompatActivity
 
         ActionBar actionBar =  getSupportActionBar();
         if (actionBar != null) {
-            actionBar.setTitle(mApplicationCurrentSubscribedData
-                    .getCurrencyPair(position).getName());
+            actionBar.setTitle(mApplicationData.getSubscribedData().getCurrencyPair(position).
+                    getName());
         }
 
         // Keep track of current position in view pager to set appropriate title in onLoadFinished
@@ -146,13 +146,13 @@ public class MainActivity extends AppCompatActivity
 
         noQuotationsSelectedView = (RelativeLayout) findViewById(R.id.no_quot_selected_view);
         splashScreenView = (ImageView) findViewById(R.id.splash_screen);
-        if (mApplicationCurrentSubscribedData == null) {
+        if (mApplicationData == null) {
             splashScreenView.setVisibility(View.VISIBLE);
         }
 
         ViewPager viewPager = (ViewPager) findViewById(R.id.currencies_viewpager);
         pagerAdapter =
-                new CurrenciesFragmentPagerAdapter(getSupportFragmentManager(), this);
+                new CurrenciesFragmentPagerAdapter(getSupportFragmentManager());
         viewPager.setAdapter(pagerAdapter);
         viewPager.addOnPageChangeListener(this);
 
@@ -168,8 +168,8 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    public synchronized SubscribedData getApplicationCurrentSubscribedData(){
-        return mApplicationCurrentSubscribedData;
+    public static synchronized AppData getApplicationData(){
+        return mApplicationData;
     }
 
     public synchronized void getDataFromServer() {
@@ -201,7 +201,7 @@ public class MainActivity extends AppCompatActivity
      * @return - AsyncTaskLoader
      */
     @Override
-    public AsyncTaskLoader<SubscribedData> onCreateLoader(int id, Bundle args) {
+    public AsyncTaskLoader<AppData> onCreateLoader(int id, Bundle args) {
         return new AsyncTaskAppDataLoader(this,
                 CURRENCY_SUBSCRIPTION_REQUEST_API_ENDPOINT,
                 AVAILABLE_CURRENCIES_REQUEST_API_ENDPOINT,
@@ -209,13 +209,13 @@ public class MainActivity extends AppCompatActivity
         }
 
     @Override
-    public void onLoadFinished(Loader<SubscribedData> loader, SubscribedData resultData) {
+    public void onLoadFinished(Loader<AppData> loader, AppData resultData) {
         splashScreenView.setVisibility(View.GONE);
-        mApplicationCurrentSubscribedData = resultData;
+        mApplicationData = resultData;
         pagerAdapter.notifyDataSetChanged();
         dataUpdated();
 
-        if (mApplicationCurrentSubscribedData.isEmpty()) {
+        if (mApplicationData.getSubscribedData().isEmpty()) {
             noQuotationsSelectedView.setVisibility(View.VISIBLE);
             currentViewPagerPosition = DATA_IS_EMPTY_POS;
         } else {
@@ -230,7 +230,7 @@ public class MainActivity extends AppCompatActivity
         switch(currentViewPagerPosition) {
             case DATA_IS_EMPTY_POS: title = "No quotations are selected.";
                 break;
-            default: title = mApplicationCurrentSubscribedData.
+            default: title = mApplicationData.getSubscribedData().
                     getCurrencyPair(currentViewPagerPosition).getName();
         }
 
@@ -241,7 +241,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public void onLoaderReset(Loader<SubscribedData> loader) {
+    public void onLoaderReset(Loader<AppData> loader) {
         // Necessary to implement LoaderManager.LoaderCallbacks.
     }
 }

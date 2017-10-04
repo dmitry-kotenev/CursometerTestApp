@@ -6,15 +6,15 @@ package com.example.android.cursometertestapp;
  * Класс для хранения данных приложения во время выполнения.
  */
 
-public class AppData {
-    private SubscribedData subscribedData;
-    private AvailableCurrenciesData availableCurrenciesData;
+class AppData {
+    private SubscribedData subscribedData = new SubscribedData();
+    private AvailableCurrenciesData availableCurrenciesData = new AvailableCurrenciesData();
 
-    public SubscribedData getSubscribedData() {
+    SubscribedData getSubscribedData() {
         return subscribedData;
     }
 
-    public void setSubscribedData(SubscribedData subscribedData) {
+    void setSubscribedData(SubscribedData subscribedData) {
         this.subscribedData = subscribedData;
     }
 
@@ -22,7 +22,7 @@ public class AppData {
         return availableCurrenciesData;
     }
 
-    public void setAvailableCurrenciesData(AvailableCurrenciesData availableCurrenciesData) {
+    void setAvailableCurrenciesData(AvailableCurrenciesData availableCurrenciesData) {
         this.availableCurrenciesData = availableCurrenciesData;
     }
 }
