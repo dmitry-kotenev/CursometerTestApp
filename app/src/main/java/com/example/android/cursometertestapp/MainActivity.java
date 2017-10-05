@@ -1,5 +1,6 @@
 package com.example.android.cursometertestapp;
 
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.graphics.Color;
 import android.support.design.widget.FloatingActionButton;
@@ -166,6 +167,15 @@ public class MainActivity extends AppCompatActivity
         } else {
             getDataFromServer();
         }
+
+        mFAB.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(v.getContext(), AddQuotationsActivity.class);
+                v.getContext().startActivity(intent);
+            }
+        });
     }
 
     public static synchronized AppData getApplicationData(){
