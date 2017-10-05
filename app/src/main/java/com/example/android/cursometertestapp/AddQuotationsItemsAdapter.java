@@ -1,11 +1,15 @@
 package com.example.android.cursometertestapp;
 
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
+
+import java.util.ArrayList;
 
 /**
  * Adapter for list of available quotations.
@@ -19,11 +23,15 @@ class AddQuotationsItemsAdapter
     private AvailableCurrenciesData appAvailCurrData;
 
     static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        TextView mQuotationFullName;
+        TextView mQuotationFullNameTxt;
+        TextView mBankListStringTxt;
+        ImageView mIsSubscribedImg;
 
         ViewHolder(View itemView) {
             super(itemView);
-            mQuotationFullName = (TextView) itemView.findViewById(R.id.quot_name);
+            mQuotationFullNameTxt = (TextView) itemView.findViewById(R.id.quot_name);
+            mBankListStringTxt = (TextView) itemView.findViewById(R.id.banks_list_string_txt);
+            mIsSubscribedImg = (ImageView) itemView.findViewById(R.id.is_subscribed_img);
             itemView.setOnClickListener(this);
         }
 
@@ -46,8 +54,31 @@ class AddQuotationsItemsAdapter
 
     @Override
     public void onBindViewHolder(AddQuotationsItemsAdapter.ViewHolder holder, int position) {
-        holder.mQuotationFullName.setText(appAvailCurrData.
-                getCurrenciesPair(position).getFullName());
+        AvailableCurrenciesData.CurrenciesPair currPair =
+                appAvailCurrData.getCurrenciesPair(position);
+
+        holder.mQuotationFullNameTxt.setText(currPair.getFullName());
+
+        boolean isAnyBankSubscribed = false;
+        ArrayList<String> subscribedBankNamesArray = new ArrayList<>();
+
+        for (int i = 0; i < currPair.size(); i++) {
+            AvailableCurrenciesData.Bank bank = currPair.getBank(i);
+            if (bank.isSubscribed()) {
+                subscribedBankNamesArray.add(bank.getName());
+                isAnyBankSubscribed = true;
+            }
+        }
+
+        if (isAnyBankSubscribed) {
+            String BankNamesString = TextUtils.join(", ", subscribedBankNamesArray);
+            holder.mBankListStringTxt.setText(BankNamesString);
+            holder.mBankListStringTxt.setVisibility(View.VISIBLE);
+            holder.mIsSubscribedImg.setVisibility(View.VISIBLE);
+        } else {
+            holder.mBankListStringTxt.setVisibility(View.GONE);
+            holder.mIsSubscribedImg.setVisibility(View.GONE);
+        }
     }
 
     @Override
