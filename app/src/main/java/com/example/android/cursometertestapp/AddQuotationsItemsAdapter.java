@@ -1,8 +1,9 @@
 package com.example.android.cursometertestapp;
 
+import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
-import android.util.Log;
+//import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -37,7 +38,9 @@ class AddQuotationsItemsAdapter
 
         @Override
         public void onClick(View v) {
-            Log.v("AddQuotItemsAdapter", "Item is clicked, position: " + getAdapterPosition());
+            Intent intent = new Intent(v.getContext(), ChoosingSourcesActivity.class);
+            intent.putExtra("QUOTATION_POSITION", getAdapterPosition());
+            v.getContext().startActivity(intent);
         }
     }
 

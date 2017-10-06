@@ -10,7 +10,7 @@ import java.util.ArrayList;
 
 class AvailableCurrenciesData extends ArrayList<AvailableCurrenciesData.CurrenciesPair> {
 
-    public CurrenciesPair getCurrenciesPair(int index) {
+    CurrenciesPair getCurrenciesPair(int index) {
         return this.get(index);
     }
 
@@ -28,7 +28,7 @@ class AvailableCurrenciesData extends ArrayList<AvailableCurrenciesData.Currenci
             this.add(bank);
         }
 
-        public AvailableCurrenciesData.Bank getBank(int index) {
+        AvailableCurrenciesData.Bank getBank(int index) {
             return this.get(index);
         }
 
@@ -48,11 +48,11 @@ class AvailableCurrenciesData extends ArrayList<AvailableCurrenciesData.Currenci
             this.name = name;
         }
 
-        public String getFullName() {
+        String getFullName() {
             return fullName;
         }
 
-        public void setFullName(String fullName) {
+        void setFullName(String fullName) {
             this.fullName = fullName;
         }
 
@@ -60,7 +60,7 @@ class AvailableCurrenciesData extends ArrayList<AvailableCurrenciesData.Currenci
             return enable;
         }
 
-        public void setEnable(boolean enable) {
+        void setEnable(boolean enable) {
             this.enable = enable;
         }
     }
@@ -86,11 +86,11 @@ class AvailableCurrenciesData extends ArrayList<AvailableCurrenciesData.Currenci
             this.name = name;
         }
 
-        public boolean isSubscribed() {
+        boolean isSubscribed() {
             return subscribed;
         }
 
-        public void setSubscribed(boolean subscribed) {
+        void setSubscribed(boolean subscribed) {
             this.subscribed = subscribed;
         }
     }

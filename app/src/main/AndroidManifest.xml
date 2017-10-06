@@ -33,6 +33,13 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".MainActivity" />
         </activity>
+        <activity
+            android:name=".ChoosingSourcesActivity"
+            android:parentActivityName= ".AddQuotationsActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".AddQuotationsActivity" />
+        </activity>
     </application>
 
 </manifest>

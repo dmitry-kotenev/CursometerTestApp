@@ -182,6 +182,10 @@ public class MainActivity extends AppCompatActivity
         return mApplicationData;
     }
 
+    public static synchronized String getCookiesString(){
+        return cookiesString;
+    }
+
     public synchronized void getDataFromServer() {
         getSupportLoaderManager().initLoader(ASYNC_TASK_LOADER_ID, null, MainActivity.this);
 
