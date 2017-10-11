@@ -20,8 +20,9 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
 public class MainActivity extends AppCompatActivity
-        implements LoaderManager.LoaderCallbacks<AppData>,
-        ViewPager.OnPageChangeListener {
+        implements /* LoaderManager.LoaderCallbacks<AppData>, */
+        ViewPager.OnPageChangeListener,
+        ApplicationDataManager.DataUpdateListener{
 
     private static final int DATA_IS_EMPTY_POS = -1; // for currentViewPagerPosition variable.
     private static final int DATA_IS_NULL_POS = -2; // for currentViewPagerPosition variable.
@@ -46,28 +47,28 @@ public class MainActivity extends AppCompatActivity
     private ImageView splashScreenView;
     private FloatingActionButton mFAB;
 
-    /**
-     * Class to make async request to the server to get cookie string to serve following requests.
-     */
-    private class AuthorizationAsyncTask extends AsyncTask<String, Long, String> {
-
-        /**
-         *
-         * @param params - param[0] - API url for authorization POST request; param[0] - unique
-         *               user ID.
-         * @return String - cookies in form of one string.
-         */
-        @Override
-        protected String doInBackground(String... params) {
-            return CursometerUtils.makeAuthorizationPostRequest(params[0], params[1]);
-        }
-
-        @Override
-        protected void onPostExecute(String tempCookiesString) {
-            cookiesString = tempCookiesString;
-            getDataFromServer();
-        }
-    }
+//    /**
+//     * Class to make async request to the server to get cookie string to serve following requests.
+//     */
+//    private class AuthorizationAsyncTask extends AsyncTask<String, Long, String> {
+//
+//        /**
+//         *
+//         * @param params - param[0] - API url for authorization POST request; param[0] - unique
+//         *               user ID.
+//         * @return String - cookies in form of one string.
+//         */
+//        @Override
+//        protected String doInBackground(String... params) {
+//            return CursometerUtils.makeAuthorizationPostRequest(params[0], params[1]);
+//        }
+//
+//        @Override
+//        protected void onPostExecute(String tempCookiesString) {
+//            cookiesString = tempCookiesString;
+//            getDataFromServer();
+//        }
+//    }
 
     @Override
     public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
@@ -95,6 +96,32 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onPageScrollStateChanged(int state) {
         // Necessary to implement ViewPager.OnPageChangeListener.
+    }
+
+    @Override
+    public void onDataUpdate(AppData appData) {
+
+        splashScreenView.setVisibility(View.GONE);
+        mApplicationData = appData;
+        pagerAdapter.notifyDataSetChanged();
+        dataUpdated();
+
+        if (mApplicationData.getSubscribedData().isEmpty()) {
+            noQuotationsSelectedView.setVisibility(View.VISIBLE);
+            currentViewPagerPosition = DATA_IS_EMPTY_POS;
+        } else {
+            noQuotationsSelectedView.setVisibility(View.GONE);
+            if ((currentViewPagerPosition == DATA_IS_EMPTY_POS) ||
+                    (currentViewPagerPosition == DATA_IS_NULL_POS)) {
+                currentViewPagerPosition = 0;
+            }
+        }
+
+    }
+
+    @Override
+    public void onStartDataDownloading() {
+
     }
 
     // Update data in fragments through listeners:
@@ -161,12 +188,16 @@ public class MainActivity extends AppCompatActivity
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(viewPager, true);
 
-        if (cookiesString == null) {
-            new AuthorizationAsyncTask().
-                    execute(AUTHORIZATION_REQUEST_API_ENDPOINT, "exampleid174942"); // Explicit user ID is temporarily here.
-        } else {
-            getDataFromServer();
-        }
+//        if (cookiesString == null) {
+//            new AuthorizationAsyncTask().
+//                    execute(AUTHORIZATION_REQUEST_API_ENDPOINT, "exampleid174942"); // Explicit user ID is temporarily here.
+//        } else {
+//            getDataFromServer();
+//        }
+
+        ApplicationDataManager appDataManager = ApplicationDataManager.getInstance();
+        appDataManager.registerDataUpdateListener(this);
+        appDataManager.getData();
 
         mFAB.setOnClickListener(new View.OnClickListener() {
 
@@ -187,7 +218,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     public synchronized void getDataFromServer() {
-        getSupportLoaderManager().initLoader(ASYNC_TASK_LOADER_ID, null, MainActivity.this);
+        ApplicationDataManager.getInstance().getData();
 
 
 
@@ -208,54 +239,61 @@ public class MainActivity extends AppCompatActivity
 //        noInternetConnectionMessage.show();
     }
 
-    /**
-     *
-     * @param id - loader ID.
-     * @param args - contains API url and cookies string.
-     * @return - AsyncTaskLoader
-     */
-    @Override
-    public AsyncTaskLoader<AppData> onCreateLoader(int id, Bundle args) {
-        return new AsyncTaskAppDataLoader(this,
-                CURRENCY_SUBSCRIPTION_REQUEST_API_ENDPOINT,
-                AVAILABLE_CURRENCIES_REQUEST_API_ENDPOINT,
-                cookiesString);
-        }
+//    /**
+//     *
+//     * @param id - loader ID.
+//     * @param args - contains API url and cookies string.
+//     * @return - AsyncTaskLoader
+//     */
+//    @Override
+//    public AsyncTaskLoader<AppData> onCreateLoader(int id, Bundle args) {
+//        return new AsyncTaskAppDataLoader(this,
+//                CURRENCY_SUBSCRIPTION_REQUEST_API_ENDPOINT,
+//                AVAILABLE_CURRENCIES_REQUEST_API_ENDPOINT,
+//                cookiesString);
+//        }
+//
+//    @Override
+//    public void onLoadFinished(Loader<AppData> loader, AppData resultData) {
+//        splashScreenView.setVisibility(View.GONE);
+//        mApplicationData = resultData;
+//        pagerAdapter.notifyDataSetChanged();
+//        dataUpdated();
+//
+//        if (mApplicationData.getSubscribedData().isEmpty()) {
+//            noQuotationsSelectedView.setVisibility(View.VISIBLE);
+//            currentViewPagerPosition = DATA_IS_EMPTY_POS;
+//        } else {
+//            noQuotationsSelectedView.setVisibility(View.GONE);
+//            if ((currentViewPagerPosition == DATA_IS_EMPTY_POS) ||
+//                    (currentViewPagerPosition == DATA_IS_NULL_POS)) {
+//                currentViewPagerPosition = 0;
+//            }
+//        }
+//
+//        String title;
+//        switch(currentViewPagerPosition) {
+//            case DATA_IS_EMPTY_POS: title = "No quotations are selected.";
+//                break;
+//            default: title = mApplicationData.getSubscribedData().
+//                    getCurrencyPair(currentViewPagerPosition).getName();
+//        }
+//
+//        ActionBar actionBar = getSupportActionBar();
+//        if (actionBar != null){
+//            actionBar.setTitle(title);
+//        }
+//    }
+//
+//    @Override
+//    public void onLoaderReset(Loader<AppData> loader) {
+//        // Necessary to implement LoaderManager.LoaderCallbacks.
+//    }
+
 
     @Override
-    public void onLoadFinished(Loader<AppData> loader, AppData resultData) {
-        splashScreenView.setVisibility(View.GONE);
-        mApplicationData = resultData;
-        pagerAdapter.notifyDataSetChanged();
-        dataUpdated();
-
-        if (mApplicationData.getSubscribedData().isEmpty()) {
-            noQuotationsSelectedView.setVisibility(View.VISIBLE);
-            currentViewPagerPosition = DATA_IS_EMPTY_POS;
-        } else {
-            noQuotationsSelectedView.setVisibility(View.GONE);
-            if ((currentViewPagerPosition == DATA_IS_EMPTY_POS) ||
-                    (currentViewPagerPosition == DATA_IS_NULL_POS)) {
-                currentViewPagerPosition = 0;
-            }
-        }
-
-        String title;
-        switch(currentViewPagerPosition) {
-            case DATA_IS_EMPTY_POS: title = "No quotations are selected.";
-                break;
-            default: title = mApplicationData.getSubscribedData().
-                    getCurrencyPair(currentViewPagerPosition).getName();
-        }
-
-        ActionBar actionBar = getSupportActionBar();
-        if (actionBar != null){
-            actionBar.setTitle(title);
-        }
-    }
-
-    @Override
-    public void onLoaderReset(Loader<AppData> loader) {
-        // Necessary to implement LoaderManager.LoaderCallbacks.
+    protected void onPause() {
+        super.onPause();
+        ApplicationDataManager.getInstance().unregisterDataUpdateListener(this);
     }
 }
